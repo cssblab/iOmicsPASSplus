@@ -24,3 +24,7 @@
   
 * **Adjustment for clinical information**\
   Users can incorporate clinical information such as age, gender and BMI, to modify the prior class probabilities used for assigning samples to the different groups.
+  
+  The figure below illustrates the overview of **iOmicsPASS+**
+![Overview_iOmicsPASSplus](https://user-images.githubusercontent.com/37172948/125907017-9c7000f9-ea4d-4bc2-b466-cad5b906115e.png)
+
