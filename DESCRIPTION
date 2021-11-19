@@ -1,0 +1,39 @@
+Package: iOmicsPASSplus
+Type: Package
+Title: A R-package for iOmicsPASS
+Version: 1.0
+Authors@R: c(
+    person("Hiromi WL", "Koh", email = "hiromikwl@gmail.com", role = c("aut", "cre")),
+        person("Hyungwon", "Choi", email = "hyung_won_choi@nus.edu.sg", role = c("aut"))
+    )
+Description: This is a R-package for carrying out multiple-omics data integration using networks,
+    in a systems biology approach. The tool integrates up to three types of -omics data using 
+    networks as input to create co-expression scores. Then using a supervised approach, it 
+    identifies a set of subnetwork signatures that best discriminate between phenotypic outcomes.
+    If there is no known network, the tool includes a network inference module that estimates 
+    a partial correlation network. The package also includes additional functionalities such as
+    a prediction module for classifying samples based on identified signatures. 
+License: GPL (>=2)
+URL: https://github.com/CSSBlab/iOmicsPASSplus
+NeedsCompilation: yes
+Encoding: UTF-8
+LazyData: false
+Imports:
+  corpcor,
+  gplots,
+	grid,
+	gridExtra,
+	gridGraphics,
+	huge,
+	nnet,
+	pheatmap,
+	pracma,
+	RColorBrewer
+RoxygenNote: 7.1.1
+Suggests: 
+    knitr,
+    devtools,
+    rmarkdown
+VignetteBuilder: knitr
+Depends: 
+    R (>= 2.10)
