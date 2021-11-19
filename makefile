@@ -1,4 +1,3 @@
-mkdir /bin
 all: bin/iOmicsPASS
 
 objs = main globals subjectClass PAMClass geneClass
