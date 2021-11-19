@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:5ffdd584b85cb4b5c113cdbbaa49c7cfd5f9b6d4c545592a161f9a6f1d1193a6
-size 387
+/*
+ * Copyright (c) 2014 Glen Fernandes
+ *
+ * Distributed under the Boost Software License, Version 1.0. (See
+ * accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
+ */
+
+#ifndef BOOST_REF_HPP
+#define BOOST_REF_HPP
+
+// The header file at this path is deprecated;
+// use boost/core/ref.hpp instead.
+
+#include <boost/core/ref.hpp>
+
+#endif

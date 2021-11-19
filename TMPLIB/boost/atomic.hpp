@@ -1,3 +1,18 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8d06d571208050c83b960a528c5746001c19e4a4f1d12e7c02496bfafe1588e7
-size 418
+#ifndef BOOST_ATOMIC_HPP
+#define BOOST_ATOMIC_HPP
+
+//  Copyright (c) 2011 Helge Bahmann
+//
+//  Distributed under the Boost Software License, Version 1.0.
+//  See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+// This header includes all Boost.Atomic public headers
+
+#include <boost/atomic/atomic.hpp>
+
+#ifdef BOOST_HAS_PRAGMA_ONCE
+#pragma once
+#endif
+
+#endif

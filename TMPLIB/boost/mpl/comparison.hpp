@@ -1,3 +1,24 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:6863a94c6a57a7aaa07502fe1ec57cab8db1e4a4db5c2a2392bca32e415e8e07
-size 659
+
+#ifndef BOOST_MPL_COMPARISON_HPP_INCLUDED
+#define BOOST_MPL_COMPARISON_HPP_INCLUDED
+
+// Copyright Aleksey Gurtovoy 2000-2004
+//
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
+// http://www.boost.org/LICENSE_1_0.txt)
+//
+// See http://www.boost.org/libs/mpl for documentation.
+
+// $Id$
+// $Date$
+// $Revision$
+
+#include <boost/mpl/equal_to.hpp>
+#include <boost/mpl/not_equal_to.hpp>
+#include <boost/mpl/less.hpp>
+#include <boost/mpl/greater.hpp>
+#include <boost/mpl/less_equal.hpp>
+#include <boost/mpl/greater_equal.hpp>
+
+#endif // BOOST_MPL_COMPARISON_HPP_INCLUDED

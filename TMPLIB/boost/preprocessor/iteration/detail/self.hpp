@@ -1,3 +1,21 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8c247a155e73145168d725a9b0919088489284a4ce1a1dc88922f5159a7a803f
-size 854
+# /* **************************************************************************
+#  *                                                                          *
+#  *     (C) Copyright Paul Mensonides 2002.
+#  *     Distributed under the Boost Software License, Version 1.0. (See
+#  *     accompanying file LICENSE_1_0.txt or copy at
+#  *     http://www.boost.org/LICENSE_1_0.txt)
+#  *                                                                          *
+#  ************************************************************************** */
+#
+# /* See http://www.boost.org for most recent version. */
+#
+# if !defined(BOOST_PP_INDIRECT_SELF)
+#    error BOOST_PP_ERROR:  no indirect file to include
+# endif
+#
+# define BOOST_PP_IS_SELFISH 1
+#
+# include BOOST_PP_INDIRECT_SELF
+#
+# undef BOOST_PP_IS_SELFISH
+# undef BOOST_PP_INDIRECT_SELF

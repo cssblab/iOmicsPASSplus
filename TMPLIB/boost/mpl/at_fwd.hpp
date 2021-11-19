@@ -1,3 +1,24 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:30bdcaf4d62eb0e9d04882fc03a9f67e6013095c236043aef9f36342b1d58e24
-size 570
+
+#ifndef BOOST_MPL_AT_FWD_HPP_INCLUDED
+#define BOOST_MPL_AT_FWD_HPP_INCLUDED
+
+// Copyright Aleksey Gurtovoy 2000-2004
+//
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
+// http://www.boost.org/LICENSE_1_0.txt)
+//
+// See http://www.boost.org/libs/mpl for documentation.
+
+// $Id$
+// $Date$
+// $Revision$
+
+namespace boost { namespace mpl {
+
+template< typename Tag > struct at_impl;
+template< typename Sequence, typename N > struct at;
+
+}}
+
+#endif // BOOST_MPL_AT_FWD_HPP_INCLUDED

@@ -1,3 +1,42 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:dd67b8b88f448f502c3410e83f9c38daa5eaac7964b1668867fd3a6e80ab4591
-size 1135
+/*=============================================================================
+    Copyright (c) 2001-2011 Joel de Guzman
+
+    Distributed under the Boost Software License, Version 1.0. (See accompanying 
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+==============================================================================*/
+#if !defined(FUSION_END_IMPL_05062005_1226)
+#define FUSION_END_IMPL_05062005_1226
+
+#include <boost/fusion/support/config.hpp>
+
+namespace boost { namespace fusion
+{
+    struct iterator_range_tag;
+
+    namespace extension
+    {
+        template <typename Tag>
+        struct end_impl;
+
+        template <>
+        struct end_impl<iterator_range_tag>
+        {
+            template <typename Sequence>
+            struct apply
+            {
+                typedef typename Sequence::end_type type;
+
+                BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+                static type
+                call(Sequence& s)
+                {
+                    return s.last;
+                }
+            };
+        };
+    }
+}}
+
+#endif
+
+

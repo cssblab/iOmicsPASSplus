@@ -1,3 +1,12 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:02d3537d9a1857856d6383369f895054665012c44821ab9ff876fe26086077c6
-size 292
+//  (C) Copyright John Maddock 2003. 
+//  Use, modification and distribution are subject to the 
+//  Boost Software License, Version 1.0. (See accompanying file 
+//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+#  pragma option pop
+#pragma nopushoptwarn
+
+
+
+
+

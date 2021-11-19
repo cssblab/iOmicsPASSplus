@@ -1,3 +1,33 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:014cf67a99aac21f05e76f3a6254e076c8641fc209cfa04a86e0167c7f05e92d
-size 707
+
+#ifndef BOOST_MPL_LIST_AUX_SIZE_HPP_INCLUDED
+#define BOOST_MPL_LIST_AUX_SIZE_HPP_INCLUDED
+
+// Copyright Aleksey Gurtovoy 2000-2004
+//
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
+// http://www.boost.org/LICENSE_1_0.txt)
+//
+// See http://www.boost.org/libs/mpl for documentation.
+
+// $Id$
+// $Date$
+// $Revision$
+
+#include <boost/mpl/size_fwd.hpp>
+#include <boost/mpl/list/aux_/tag.hpp>
+
+namespace boost { namespace mpl {
+
+template<>
+struct size_impl< aux::list_tag >
+{
+    template< typename List > struct apply
+        : List::size
+    {
+    };
+};
+
+}}
+
+#endif // BOOST_MPL_LIST_AUX_SIZE_HPP_INCLUDED

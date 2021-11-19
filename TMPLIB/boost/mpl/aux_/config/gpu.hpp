@@ -1,3 +1,35 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:cf4ba03b7ff9db45c6d419236631c46e7bbe380524864a1e91bfd603d54cc635
-size 701
+
+#ifndef BOOST_MPL_AUX_CONFIG_GPU_HPP_INCLUDED
+#define BOOST_MPL_AUX_CONFIG_GPU_HPP_INCLUDED
+
+// Copyright Eric Niebler 2014
+//
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+//
+// See http://www.boost.org/libs/mpl for documentation.
+
+// $Id$
+// $Date$
+// $Revision$
+
+#include <boost/config.hpp>
+
+#if !defined(BOOST_MPL_CFG_GPU_ENABLED) \
+
+#   define BOOST_MPL_CFG_GPU_ENABLED BOOST_GPU_ENABLED
+
+#endif
+
+#if defined __CUDACC__
+
+#    define BOOST_MPL_CFG_GPU 1
+
+#else
+
+#    define BOOST_MPL_CFG_GPU 0
+
+#endif
+
+#endif // BOOST_MPL_AUX_CONFIG_GPU_HPP_INCLUDED

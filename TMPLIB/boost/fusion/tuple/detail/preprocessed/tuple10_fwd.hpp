@@ -1,3 +1,16 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:3ae092941dd993c69d01642a0a3d891dc9e729309a213bba30cf8d099ae26ae8
-size 749
+/*=============================================================================
+    Copyright (c) 2001-2011 Joel de Guzman
+
+    Distributed under the Boost Software License, Version 1.0. (See accompanying
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+    This is an auto-generated file. Do not edit!
+==============================================================================*/
+namespace boost { namespace fusion
+{
+    struct void_;
+    template <
+        typename T0 = void_ , typename T1 = void_ , typename T2 = void_ , typename T3 = void_ , typename T4 = void_ , typename T5 = void_ , typename T6 = void_ , typename T7 = void_ , typename T8 = void_ , typename T9 = void_
+    >
+    struct tuple;
+}}

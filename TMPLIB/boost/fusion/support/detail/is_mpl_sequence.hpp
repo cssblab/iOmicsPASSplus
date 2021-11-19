@@ -1,3 +1,29 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:dcf4b47ade35db247197a6979f0ad5ee8ccc75c1683f2496349166c9d683d3ff
-size 1109
+/*=============================================================================
+    Copyright (c) 2001-2011 Joel de Guzman
+    Copyright (c) 2005-2006 Dan Marsden
+
+    Distributed under the Boost Software License, Version 1.0. (See accompanying 
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+==============================================================================*/
+#if !defined(FUSION_DETAIL_IS_MPL_SEQUENCE_29122006_1105)
+#define FUSION_DETAIL_IS_MPL_SEQUENCE_29122006_1105
+
+#include <boost/fusion/support/config.hpp>
+#include <boost/fusion/support/sequence_base.hpp>
+#include <boost/mpl/is_sequence.hpp>
+#include <boost/mpl/and.hpp>
+#include <boost/mpl/not.hpp>
+#include <boost/type_traits/is_complete.hpp>
+#include <boost/type_traits/is_convertible.hpp>
+
+namespace boost { namespace fusion { namespace detail
+{
+    template <typename T>
+    struct is_mpl_sequence
+        : mpl::and_<
+            mpl::not_<mpl::and_<is_complete<T>, is_convertible<T, from_sequence_convertible_type> > >
+          , mpl::is_sequence<T> >
+    {};
+}}}
+
+#endif

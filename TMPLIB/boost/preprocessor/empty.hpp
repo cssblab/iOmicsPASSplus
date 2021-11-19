@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:90ea71b99bc6341fb4435b04be49a1cda5f66bc8e965021b19fe89c1c87886aa
-size 759
+# /* **************************************************************************
+#  *                                                                          *
+#  *     (C) Copyright Paul Mensonides 2002.
+#  *     Distributed under the Boost Software License, Version 1.0. (See
+#  *     accompanying file LICENSE_1_0.txt or copy at
+#  *     http://www.boost.org/LICENSE_1_0.txt)
+#  *                                                                          *
+#  ************************************************************************** */
+#
+# /* See http://www.boost.org for most recent version. */
+#
+# ifndef BOOST_PREPROCESSOR_EMPTY_HPP
+# define BOOST_PREPROCESSOR_EMPTY_HPP
+#
+# include <boost/preprocessor/facilities/empty.hpp>
+#
+# endif

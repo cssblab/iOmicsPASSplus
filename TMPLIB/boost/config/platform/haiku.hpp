@@ -1,3 +1,31 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:bec1c23c0e630663b7775e0907505b67008dd7f05b10deddd0efd3b694d07d6f
-size 838
+//  (C) Copyright Jessica Hamilton 2014.
+//  Use, modification and distribution are subject to the
+//  Boost Software License, Version 1.0. (See accompanying file
+//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+//  See http://www.boost.org for most recent version.
+
+//  Haiku specific config options:
+
+#define BOOST_PLATFORM "Haiku"
+
+#define BOOST_HAS_UNISTD_H
+#define BOOST_HAS_STDINT_H
+
+#ifndef BOOST_DISABLE_THREADS
+#  define BOOST_HAS_THREADS
+#endif
+
+#define BOOST_NO_CXX11_HDR_TYPE_TRAITS
+#define BOOST_NO_CXX11_ATOMIC_SMART_PTR
+#define BOOST_NO_CXX11_STATIC_ASSERT
+#define BOOST_NO_CXX11_VARIADIC_MACROS
+
+//
+// thread API's not auto detected:
+//
+#define BOOST_HAS_SCHED_YIELD
+#define BOOST_HAS_GETTIMEOFDAY
+
+// boilerplate code:
+#include <boost/config/detail/posix_features.hpp>

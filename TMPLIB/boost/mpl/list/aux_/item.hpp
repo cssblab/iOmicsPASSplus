@@ -1,3 +1,55 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:22ae79d10d1697320f03692569a085ee01b6e8a1876e501a5c9fa486b199a438
-size 1227
+
+#ifndef BOOST_MPL_LIST_AUX_NODE_HPP_INCLUDED
+#define BOOST_MPL_LIST_AUX_NODE_HPP_INCLUDED
+
+// Copyright Aleksey Gurtovoy 2000-2004
+//
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
+// http://www.boost.org/LICENSE_1_0.txt)
+//
+// See http://www.boost.org/libs/mpl for documentation.
+
+// $Id$
+// $Date$
+// $Revision$
+
+#include <boost/mpl/long.hpp>
+#include <boost/mpl/list/aux_/tag.hpp>
+#include <boost/mpl/aux_/config/msvc.hpp>
+#include <boost/mpl/aux_/config/workaround.hpp>
+
+namespace boost { namespace mpl {
+
+template<
+      typename Size
+    , typename T
+    , typename Next
+    >
+struct l_item
+{
+// agurt, 17/jul/03: to facilitate the deficient 'is_sequence' implementation 
+#if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+    typedef int begin;
+#endif
+    typedef aux::list_tag tag;
+    typedef l_item type;
+
+    typedef Size size;
+    typedef T item;
+    typedef Next next;
+};
+
+struct l_end
+{
+#if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+    typedef int begin;
+#endif
+    typedef aux::list_tag tag;
+    typedef l_end type;
+    typedef long_<0> size;
+};
+
+}}
+
+#endif // BOOST_MPL_LIST_AUX_NODE_HPP_INCLUDED

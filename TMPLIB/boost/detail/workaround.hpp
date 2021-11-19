@@ -1,3 +1,10 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:390ecc70559b9e3b89e291ae5e037ed8e834ac21bb1a37e117ac6322d4b41722
-size 345
+// Copyright David Abrahams 2002.
+// Distributed under the Boost Software License, Version 1.0. (See
+// accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+#ifndef WORKAROUND_DWA2002126_HPP
+#define WORKAROUND_DWA2002126_HPP
+
+#include <boost/config/workaround.hpp>
+
+#endif // WORKAROUND_DWA2002126_HPP

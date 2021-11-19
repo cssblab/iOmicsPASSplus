@@ -1,3 +1,27 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:90e8b3d7cb8552bc0abcdbb0a4f832bf1dd1e44bb076d2c94ef6f2090f697fd3
-size 646
+// -------------------------------------
+//
+//           (C) Copyright Gennaro Prota 2003.
+//
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
+//
+// ------------------------------------------------------
+
+#ifndef BOOST_NON_TYPE_HPP_GP_20030417
+#define BOOST_NON_TYPE_HPP_GP_20030417
+
+
+namespace boost {
+
+  // Just a simple "envelope" for non-type template parameters. Useful
+  // to work around some MSVC deficiencies.
+
+ template <typename T, T n>
+ struct non_type { };
+
+
+}
+
+
+#endif // include guard

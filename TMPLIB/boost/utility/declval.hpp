@@ -1,3 +1,13 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:68ac2bb02f57b1e1eca146dee280b34bc2178a18ef7adf606b9519ab96d40e42
-size 397
+//  declval.hpp  -------------------------------------------------------------//
+
+//  Copyright 2010 Vicente J. Botet Escriba
+
+//  Distributed under the Boost Software License, Version 1.0.
+//  See http://www.boost.org/LICENSE_1_0.txt
+
+#ifndef BOOST_UTILITY_DECLVAL_HPP
+#define BOOST_UTILITY_DECLVAL_HPP
+
+#include <boost/type_traits/declval.hpp>
+
+#endif  // BOOST_UTILITY_DECLVAL_HPP

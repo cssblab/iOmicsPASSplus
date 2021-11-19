@@ -1,3 +1,21 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:1118cd1c84b365a7717bfaf190807141e8e6ae425c7132acedeaf2c188a0ee09
-size 546
+
+#ifndef BOOST_MPL_LIMITS_VECTOR_HPP_INCLUDED
+#define BOOST_MPL_LIMITS_VECTOR_HPP_INCLUDED
+
+// Copyright Aleksey Gurtovoy 2000-2004
+//
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
+// http://www.boost.org/LICENSE_1_0.txt)
+//
+// See http://www.boost.org/libs/mpl for documentation.
+
+// $Id$
+// $Date$
+// $Revision$
+
+#if !defined(BOOST_MPL_LIMIT_VECTOR_SIZE)
+#   define BOOST_MPL_LIMIT_VECTOR_SIZE 20
+#endif
+
+#endif // BOOST_MPL_LIMITS_VECTOR_HPP_INCLUDED

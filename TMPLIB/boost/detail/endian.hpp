@@ -1,3 +1,11 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:07db2aaa3b6afaba7511570a6d597db64cb5f107a2de21e6fecfcb36194d0324
-size 375
+// Copyright 2013 Rene Rivera
+// Distributed under the Boost Software License, Version 1.0. (See accompany-
+// ing file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+#ifndef BOOST_DETAIL_ENDIAN_HPP
+#define BOOST_DETAIL_ENDIAN_HPP
+
+// Use the Predef library for the detection of endianess.
+#include <boost/predef/detail/endian_compat.h>
+
+#endif

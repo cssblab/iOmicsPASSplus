@@ -1,3 +1,43 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8f1c9264e0e3352cc7a9e3bcaf4c87e375f3148caaddccceb91765f7980493c8
-size 1225
+/*
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
+ *
+ * Copyright (c) 2017 Andrey Semashev
+ */
+/*!
+ * \file   atomic/detail/type_traits/make_signed.hpp
+ *
+ * This header defines \c make_signed type trait
+ */
+
+#ifndef BOOST_ATOMIC_DETAIL_TYPE_TRAITS_MAKE_SIGNED_HPP_INCLUDED_
+#define BOOST_ATOMIC_DETAIL_TYPE_TRAITS_MAKE_SIGNED_HPP_INCLUDED_
+
+#include <boost/atomic/detail/config.hpp>
+// Some versions of libstdc++ don't consider __int128 an integral type. Use Boost.TypeTraits because of that.
+#if !defined(BOOST_ATOMIC_DETAIL_NO_CXX11_BASIC_HDR_TYPE_TRAITS) && !defined(BOOST_HAS_INT128)
+#include <type_traits>
+#else
+#include <boost/type_traits/make_signed.hpp>
+#endif
+
+#ifdef BOOST_HAS_PRAGMA_ONCE
+#pragma once
+#endif
+
+namespace boost {
+namespace atomics {
+namespace detail {
+
+#if !defined(BOOST_ATOMIC_DETAIL_NO_CXX11_BASIC_HDR_TYPE_TRAITS) && !defined(BOOST_HAS_INT128)
+using std::make_signed;
+#else
+using boost::make_signed;
+#endif
+
+} // namespace detail
+} // namespace atomics
+} // namespace boost
+
+#endif // BOOST_ATOMIC_DETAIL_TYPE_TRAITS_MAKE_SIGNED_HPP_INCLUDED_

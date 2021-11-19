@@ -1,3 +1,28 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:43b0dd59733e43f412cd33c0059b8a8a86c6ea291fa5882d354eee8d351197c4
-size 835
+/*
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
+ *
+ * Copyright (c) 2018 Andrey Semashev
+ */
+/*!
+ * \file   atomic/detail/fp_operations.hpp
+ *
+ * This header defines floating point atomic operations, including the generic version.
+ */
+
+#ifndef BOOST_ATOMIC_DETAIL_FP_OPERATIONS_HPP_INCLUDED_
+#define BOOST_ATOMIC_DETAIL_FP_OPERATIONS_HPP_INCLUDED_
+
+#include <boost/atomic/detail/fp_ops_generic.hpp>
+#include <boost/atomic/detail/fp_ops_emulated.hpp>
+
+#if !defined(BOOST_ATOMIC_DETAIL_FP_BACKEND_GENERIC)
+#include BOOST_ATOMIC_DETAIL_FP_BACKEND_HEADER(boost/atomic/detail/fp_ops_)
+#endif
+
+#ifdef BOOST_HAS_PRAGMA_ONCE
+#pragma once
+#endif
+
+#endif // BOOST_ATOMIC_DETAIL_FP_OPERATIONS_HPP_INCLUDED_

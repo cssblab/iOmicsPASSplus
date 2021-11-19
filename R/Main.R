@@ -1093,10 +1093,11 @@ iOmicsPASS.R <- function( ff= "input.param", outputDir ="iOmicsPASS/Output/", Cr
 #' @return a dataframe with class probabilities assigned to each sample, used as prior in iOmicsPASS
 #' @examples
 #' data(PhenotypeFile)
-#' row.names(PhenotypeFile) = PhenotypeFile$TulipID
-#' PhenotypeFile=PhenotypeFile[,-1]
-#' prior_out = createPrior(PhenotypeFile, y = "Group",outputDir = "iOmicsPASS/inputFiles/")
-#' prior_test = createPrior(PhenotypeFile, y = "Group",predict=TRUE, testFile = TestData)
+#' PhenotypeFile2 = PhenotypeFile
+#' row.names(PhenotypeFile2) = PhenotypeFile$TulipID
+#' PhenotypeFile2=PhenotypeFile2[,-1]
+#' prior_out = createPrior(PhenotypeFile2, y = "Group",outputDir = "iOmicsPASS/inputFiles/")
+#' prior_test = createPrior(PhenotypeFile2, y = "Group",predict=TRUE, testFile = TestData)
 #' @export
 createPrior <-function(FILE, y = NULL,var.cat=NULL,testFile=NULL,predict=FALSE, outputDir = "iOmicsPASS/inputFiles/", tag=NULL){
 

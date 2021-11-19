@@ -1,3 +1,53 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:d894cc0e4c7b2f6dd3f1b266fd1a6ab46df6a7c8c9f1d289d59113e03a29ccf4
-size 1382
+/*
+Copyright Rene Rivera 2011-2015
+Distributed under the Boost Software License, Version 1.0.
+(See accompanying file LICENSE_1_0.txt or copy at
+http://www.boost.org/LICENSE_1_0.txt)
+*/
+
+#ifndef BOOST_PREDEF_LANGUAGE_STDC_H
+#define BOOST_PREDEF_LANGUAGE_STDC_H
+
+#include <boost/predef/version_number.h>
+#include <boost/predef/make.h>
+
+/*`
+[heading `BOOST_LANG_STDC`]
+
+[@http://en.wikipedia.org/wiki/C_(programming_language) Standard C] language.
+If available, the year of the standard is detected as YYYY.MM.1 from the Epoc date.
+
+[table
+    [[__predef_symbol__] [__predef_version__]]
+
+    [[`__STDC__`] [__predef_detection__]]
+
+    [[`__STDC_VERSION__`] [V.R.P]]
+    ]
+ */
+
+#define BOOST_LANG_STDC BOOST_VERSION_NUMBER_NOT_AVAILABLE
+
+#if defined(__STDC__)
+#   undef BOOST_LANG_STDC
+#   if defined(__STDC_VERSION__)
+#       if (__STDC_VERSION__ > 100)
+#           define BOOST_LANG_STDC BOOST_PREDEF_MAKE_YYYYMM(__STDC_VERSION__)
+#       else
+#           define BOOST_LANG_STDC BOOST_VERSION_NUMBER_AVAILABLE
+#       endif
+#   else
+#       define BOOST_LANG_STDC BOOST_VERSION_NUMBER_AVAILABLE
+#   endif
+#endif
+
+#if BOOST_LANG_STDC
+#   define BOOST_LANG_STDC_AVAILABLE
+#endif
+
+#define BOOST_LANG_STDC_NAME "Standard C"
+
+#endif
+
+#include <boost/predef/detail/test.h>
+BOOST_PREDEF_DECLARE_TEST(BOOST_LANG_STDC,BOOST_LANG_STDC_NAME)

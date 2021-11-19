@@ -1,3 +1,15 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:6323ef24f590a7890f400f49c216baec07094bb7dccef67a6dfcdb4ee92e0ade
-size 547
+/*=============================================================================
+    Copyright (c) 2001-2011 Joel de Guzman
+
+    Distributed under the Boost Software License, Version 1.0. (See accompanying
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+==============================================================================*/
+#if !defined(BOOST_FUSION_SUPPORT_VOID_20070706_2125)
+#define BOOST_FUSION_SUPPORT_VOID_20070706_2125
+
+namespace boost { namespace fusion
+{
+    struct void_ {};
+}}
+
+#endif

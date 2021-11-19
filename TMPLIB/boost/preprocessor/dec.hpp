@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:86072255518953c658b49ed7f6b0655e603234e2a366375e7dc946d5722fda76
-size 753
+# /* **************************************************************************
+#  *                                                                          *
+#  *     (C) Copyright Paul Mensonides 2002.
+#  *     Distributed under the Boost Software License, Version 1.0. (See
+#  *     accompanying file LICENSE_1_0.txt or copy at
+#  *     http://www.boost.org/LICENSE_1_0.txt)
+#  *                                                                          *
+#  ************************************************************************** */
+#
+# /* See http://www.boost.org for most recent version. */
+#
+# ifndef BOOST_PREPROCESSOR_DEC_HPP
+# define BOOST_PREPROCESSOR_DEC_HPP
+#
+# include <boost/preprocessor/arithmetic/dec.hpp>
+#
+# endif

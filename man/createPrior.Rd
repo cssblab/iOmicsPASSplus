@@ -37,8 +37,9 @@ Create prior probabilities for discriminant model in iOmicsPASS
 }
 \examples{
 data(PhenotypeFile)
-row.names(PhenotypeFile) = PhenotypeFile$TulipID
-PhenotypeFile=PhenotypeFile[,-1]
-prior_out = createPrior(PhenotypeFile, y = "Group",outputDir = "iOmicsPASS/inputFiles/")
-prior_test = createPrior(PhenotypeFile, y = "Group",predict=TRUE, testFile = TestData)
+PhenotypeFile2 = PhenotypeFile
+row.names(PhenotypeFile2) = PhenotypeFile$TulipID
+PhenotypeFile2=PhenotypeFile2[,-1]
+prior_out = createPrior(PhenotypeFile2, y = "Group",outputDir = "iOmicsPASS/inputFiles/")
+prior_test = createPrior(PhenotypeFile2, y = "Group",predict=TRUE, testFile = TestData)
 }

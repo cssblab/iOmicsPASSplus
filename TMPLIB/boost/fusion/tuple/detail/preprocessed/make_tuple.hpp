@@ -1,3 +1,21 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:863f9e13bfe33a58e7b7c9e17d82a7f4a7d6240bdb88f81466eaa91aa277cd07
-size 1023
+/*=============================================================================
+    Copyright (c) 2001-2011 Joel de Guzman
+
+    Distributed under the Boost Software License, Version 1.0. (See accompanying
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+    This is an auto-generated file. Do not edit!
+==============================================================================*/
+#if FUSION_MAX_VECTOR_SIZE <= 10
+#include <boost/fusion/tuple/detail/preprocessed/make_tuple10.hpp>
+#elif FUSION_MAX_VECTOR_SIZE <= 20
+#include <boost/fusion/tuple/detail/preprocessed/make_tuple20.hpp>
+#elif FUSION_MAX_VECTOR_SIZE <= 30
+#include <boost/fusion/tuple/detail/preprocessed/make_tuple30.hpp>
+#elif FUSION_MAX_VECTOR_SIZE <= 40
+#include <boost/fusion/tuple/detail/preprocessed/make_tuple40.hpp>
+#elif FUSION_MAX_VECTOR_SIZE <= 50
+#include <boost/fusion/tuple/detail/preprocessed/make_tuple50.hpp>
+#else
+#error "FUSION_MAX_VECTOR_SIZE out of bounds for preprocessed headers"
+#endif

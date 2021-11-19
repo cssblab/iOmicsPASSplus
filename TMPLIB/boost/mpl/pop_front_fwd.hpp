@@ -1,3 +1,24 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:7747e8bb931eb02a3091adcb70284665b3f3d45cbf4adc8a13623caa3f7ec360
-size 593
+
+#ifndef BOOST_MPL_POP_FRONT_FWD_HPP_INCLUDED
+#define BOOST_MPL_POP_FRONT_FWD_HPP_INCLUDED
+
+// Copyright Aleksey Gurtovoy 2000-2004
+//
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
+// http://www.boost.org/LICENSE_1_0.txt)
+//
+// See http://www.boost.org/libs/mpl for documentation.
+
+// $Id$
+// $Date$
+// $Revision$
+
+namespace boost { namespace mpl {
+
+template< typename Tag > struct pop_front_impl;
+template< typename Sequence > struct pop_front;
+
+}}
+
+#endif // BOOST_MPL_POP_FRONT_FWD_HPP_INCLUDED

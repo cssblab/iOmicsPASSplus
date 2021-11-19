@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8e952b1d1874d06d3f3578c69f9e0b758af64fca264f98dc3a990f63b6ae64cc
-size 602
+/*=============================================================================
+    Copyright (c) 2001-2011 Joel de Guzman
+
+    Distributed under the Boost Software License, Version 1.0. (See accompanying 
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+==============================================================================*/
+#if !defined(FUSION_SEQUENCE_IO_10032005_0836)
+#define FUSION_SEQUENCE_IO_10032005_0836
+
+#include <boost/fusion/support/config.hpp>
+#include <boost/fusion/sequence/io/in.hpp>
+#include <boost/fusion/sequence/io/out.hpp>
+
+#endif

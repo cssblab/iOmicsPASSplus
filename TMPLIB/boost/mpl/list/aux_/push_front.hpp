@@ -1,3 +1,39 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:3cb9b6a9c6d10181199dd83f83bd833ef7f5943c33eeab250376e3ded9aeaf97
-size 953
+
+#ifndef BOOST_MPL_LIST_AUX_PUSH_FRONT_HPP_INCLUDED
+#define BOOST_MPL_LIST_AUX_PUSH_FRONT_HPP_INCLUDED
+
+// Copyright Aleksey Gurtovoy 2000-2004
+//
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
+// http://www.boost.org/LICENSE_1_0.txt)
+//
+// See http://www.boost.org/libs/mpl for documentation.
+
+// $Id$
+// $Date$
+// $Revision$
+
+#include <boost/mpl/push_front_fwd.hpp>
+#include <boost/mpl/next.hpp>
+#include <boost/mpl/list/aux_/item.hpp>
+#include <boost/mpl/list/aux_/tag.hpp>
+
+namespace boost { namespace mpl {
+
+template<>
+struct push_front_impl< aux::list_tag >
+{
+    template< typename List, typename T > struct apply
+    {
+        typedef l_item<
+              typename next<typename List::size>::type
+            , T
+            , typename List::type
+            > type;
+    };
+};
+
+}}
+
+#endif // BOOST_MPL_LIST_AUX_PUSH_FRONT_HPP_INCLUDED

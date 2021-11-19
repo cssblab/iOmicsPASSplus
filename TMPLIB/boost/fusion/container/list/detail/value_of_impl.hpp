@@ -1,3 +1,36 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:3e1ae8fa8268bdf3891e0a3903b2f4ed1a0524ad6ae1b1a4df52105c566a750c
-size 1014
+/*=============================================================================
+    Copyright (c) 2001-2011 Joel de Guzman
+    Copyright (c) 2005 Eric Niebler
+
+    Distributed under the Boost Software License, Version 1.0. (See accompanying 
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+==============================================================================*/
+#if !defined(FUSION_VALUE_OF_IMPL_07172005_0838)
+#define FUSION_VALUE_OF_IMPL_07172005_0838
+
+namespace boost { namespace fusion
+{
+    struct cons_iterator_tag;
+
+    namespace extension
+    {
+        template <typename Tag>
+        struct value_of_impl;
+
+        template <>
+        struct value_of_impl<cons_iterator_tag>
+        {
+            template <typename Iterator>
+            struct apply
+            {
+                typedef typename Iterator::cons_type cons_type;
+                typedef typename cons_type::car_type type;
+            };
+        };
+    }
+
+}}
+
+#endif
+
+

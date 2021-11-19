@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e40f18452b300949b5d8fc03f957f2a8ea1ccce110850870a30c9e548e6e83eb
-size 777
+# /* **************************************************************************
+#  *                                                                          *
+#  *     (C) Copyright Paul Mensonides 2002.
+#  *     Distributed under the Boost Software License, Version 1.0. (See
+#  *     accompanying file LICENSE_1_0.txt or copy at
+#  *     http://www.boost.org/LICENSE_1_0.txt)
+#  *                                                                          *
+#  ************************************************************************** */
+#
+# /* See http://www.boost.org for most recent version. */
+#
+# ifndef BOOST_PREPROCESSOR_ENUM_PARAMS_HPP
+# define BOOST_PREPROCESSOR_ENUM_PARAMS_HPP
+#
+# include <boost/preprocessor/repetition/enum_params.hpp>
+#
+# endif

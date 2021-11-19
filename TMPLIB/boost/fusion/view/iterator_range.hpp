@@ -1,3 +1,13 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:81f714562cc24d93c57160e7d309e3f65a931ea0d0c24d42e4ebe48e0ed91600
-size 611
+/*=============================================================================
+    Copyright (c) 2001-2011 Joel de Guzman
+
+    Distributed under the Boost Software License, Version 1.0. (See accompanying 
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+==============================================================================*/
+#if !defined(FUSION_SEQUENCE_VIEW_ITERATOR_RANGE_10022005_0610)
+#define FUSION_SEQUENCE_VIEW_ITERATOR_RANGE_10022005_0610
+
+#include <boost/fusion/support/config.hpp>
+#include <boost/fusion/view/iterator_range/iterator_range.hpp>
+
+#endif

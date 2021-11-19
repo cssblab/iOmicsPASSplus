@@ -1,3 +1,11 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e72796ceedf2353903d788548ad9e246f1306206d53d493e0f837dfa2381ccc7
-size 304
+
+// Copyright Aleksey Gurtovoy 2000-2008
+//
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
+// http://www.boost.org/LICENSE_1_0.txt)
+//
+
+// *Preprocessed* version of the main "quote.hpp" header
+// -- DO NOT modify by hand!
+

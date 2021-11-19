@@ -1,3 +1,43 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e0e54f0fe8a98f4230c0d0599e2b6e71e84a43623d55a1c413207cb9a7949602
-size 1454
+/*=============================================================================
+    Copyright (c) 2001-2011 Joel de Guzman
+
+    Distributed under the Boost Software License, Version 1.0. (See accompanying 
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+==============================================================================*/
+#if !defined(FUSION_DISTANCE_IMPL_09172005_0751)
+#define FUSION_DISTANCE_IMPL_09172005_0751
+
+#include <boost/fusion/support/config.hpp>
+#include <boost/mpl/minus.hpp>
+
+namespace boost { namespace fusion
+{
+    struct vector_iterator_tag;
+
+    namespace extension
+    {
+        template <typename Tag>
+        struct distance_impl;
+
+        template <>
+        struct distance_impl<vector_iterator_tag>
+        {
+            template <typename First, typename Last>
+            struct apply : mpl::minus<typename Last::index, typename First::index>
+            {
+                BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+                static typename mpl::minus<
+                    typename Last::index, typename First::index>::type
+                call(First const&, Last const&)
+                {
+                    typedef typename mpl::minus<
+                        typename Last::index, typename First::index>::type 
+                    result;
+                    return result();
+                }
+            };
+        };
+    }
+}}
+
+#endif

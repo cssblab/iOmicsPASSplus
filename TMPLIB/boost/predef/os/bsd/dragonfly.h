@@ -1,3 +1,50 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0461e3915c97ef5ee4ecbd6a24a98fadec9cd7dadd7807d3fc49785ec2e2d83f
-size 1333
+/*
+Copyright Rene Rivera 2012-2015
+Distributed under the Boost Software License, Version 1.0.
+(See accompanying file LICENSE_1_0.txt or copy at
+http://www.boost.org/LICENSE_1_0.txt)
+*/
+
+#ifndef BOOST_PREDEF_OS_BSD_DRAGONFLY_H
+#define BOOST_PREDEF_OS_BSD_DRAGONFLY_H
+
+#include <boost/predef/os/bsd.h>
+
+/*`
+[heading `BOOST_OS_BSD_DRAGONFLY`]
+
+[@http://en.wikipedia.org/wiki/DragonFly_BSD DragonFly BSD] operating system.
+
+[table
+    [[__predef_symbol__] [__predef_version__]]
+
+    [[`__DragonFly__`] [__predef_detection__]]
+    ]
+ */
+
+#define BOOST_OS_BSD_DRAGONFLY BOOST_VERSION_NUMBER_NOT_AVAILABLE
+
+#if !defined(BOOST_PREDEF_DETAIL_OS_DETECTED) && ( \
+    defined(__DragonFly__) \
+    )
+#   ifndef BOOST_OS_BSD_AVAILABLE
+#       define BOOST_OS_BSD BOOST_VERSION_NUMBER_AVAILABLE
+#       define BOOST_OS_BSD_AVAILABLE
+#   endif
+#   undef BOOST_OS_BSD_DRAGONFLY
+#   if defined(__DragonFly__)
+#       define BOOST_OS_DRAGONFLY_BSD BOOST_VERSION_NUMBER_AVAILABLE
+#   endif
+#endif
+
+#if BOOST_OS_BSD_DRAGONFLY
+#   define BOOST_OS_BSD_DRAGONFLY_AVAILABLE
+#   include <boost/predef/detail/os_detected.h>
+#endif
+
+#define BOOST_OS_BSD_DRAGONFLY_NAME "DragonFly BSD"
+
+#endif
+
+#include <boost/predef/detail/test.h>
+BOOST_PREDEF_DECLARE_TEST(BOOST_OS_BSD_DRAGONFLY,BOOST_OS_BSD_DRAGONFLY_NAME)

@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a688e19bfb9757775c076a18e8c74b2552f718a646e2102cfb06774919fd77fe
-size 427
+/*
+ * Copyright (c) 2014 Glen Fernandes
+ *
+ * Distributed under the Boost Software License, Version 1.0. (See
+ * accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
+ */
+
+#ifndef BOOST_UTILITY_ADDRESSOF_HPP
+#define BOOST_UTILITY_ADDRESSOF_HPP
+
+// The header file at this path is deprecated;
+// use boost/core/addressof.hpp instead.
+
+#include <boost/core/addressof.hpp>
+
+#endif

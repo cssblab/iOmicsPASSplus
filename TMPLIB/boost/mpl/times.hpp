@@ -1,3 +1,21 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:9b9517b6196327b6c07f4627f1af15bb9bd9dd41664cb0ed739cd82c5ff608be
-size 536
+
+#ifndef BOOST_MPL_TIMES_HPP_INCLUDED
+#define BOOST_MPL_TIMES_HPP_INCLUDED
+
+// Copyright Aleksey Gurtovoy 2000-2004
+//
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
+// http://www.boost.org/LICENSE_1_0.txt)
+//
+// See http://www.boost.org/libs/mpl for documentation.
+
+// $Id$
+// $Date$
+// $Revision$
+
+#define AUX778076_OP_NAME times
+#define AUX778076_OP_TOKEN *
+#include <boost/mpl/aux_/arithmetic_op.hpp>
+
+#endif // BOOST_MPL_TIMES_HPP_INCLUDED

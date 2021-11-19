@@ -1,3 +1,18 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:bedabd33ed0709d194e7370113e5a941e67d600f449b4b881640be6d98e38a3e
-size 499
+// (C) Copyright David Abrahams 2001.
+// Distributed under the Boost Software License, Version 1.0. (See
+// accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
+#ifndef BOOST_TYPE_DWA20010120_HPP
+# define BOOST_TYPE_DWA20010120_HPP
+
+namespace boost {
+
+  // Just a simple "type envelope". Useful in various contexts, mostly to work
+  // around some MSVC deficiencies.
+  template <class T>
+  struct type {};
+
+}
+
+#endif // BOOST_TYPE_DWA20010120_HPP

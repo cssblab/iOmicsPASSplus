@@ -1,3 +1,21 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:01387fa7c1af8eae632acf59bae6619c08b2debdc014d93499f1979c36df4bc8
-size 569
+
+#ifndef BOOST_MPL_GREATER_EQUAL_HPP_INCLUDED
+#define BOOST_MPL_GREATER_EQUAL_HPP_INCLUDED
+
+// Copyright Aleksey Gurtovoy 2000-2004
+//
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
+// http://www.boost.org/LICENSE_1_0.txt)
+//
+// See http://www.boost.org/libs/mpl for documentation.
+
+// $Id$
+// $Date$
+// $Revision$
+
+#define AUX778076_OP_NAME greater_equal
+#define AUX778076_OP_TOKEN >=
+#include <boost/mpl/aux_/comparison_op.hpp>
+
+#endif // BOOST_MPL_GREATER_EQUAL_HPP_INCLUDED

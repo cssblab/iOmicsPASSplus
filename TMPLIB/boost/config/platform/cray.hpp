@@ -1,3 +1,18 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:c4a3cdb035441921b2228b8274bcde5afd2f214739afe1a58c1445077ba393ba
-size 474
+//  (C) Copyright John Maddock 2011.
+//  Use, modification and distribution are subject to the
+//  Boost Software License, Version 1.0. (See accompanying file
+//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+
+//  See http://www.boost.org for most recent version.
+
+//  SGI Irix specific config options:
+
+#define BOOST_PLATFORM "Cray"
+
+// boilerplate code:
+#define BOOST_HAS_UNISTD_H
+#include <boost/config/detail/posix_features.hpp>
+
+
+

@@ -1,3 +1,13 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:226128e1d2083d8b37c4a5ad87fb2c3d2314c470239c7efc0b8c49738e713930
-size 523
+/*=============================================================================
+    Copyright (c) 2001-2007 Joel de Guzman
+
+    Distributed under the Boost Software License, Version 1.0. (See accompanying
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+==============================================================================*/
+#if !defined(FUSION_INCLUDE_TUPLE)
+#define FUSION_INCLUDE_TUPLE
+
+#include <boost/fusion/support/config.hpp>
+#include <boost/fusion/tuple.hpp>
+
+#endif

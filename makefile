@@ -1,3 +1,15 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:9477f18d4b8ce0d84357bd60b5d07501144a6fbc702e07d8799c6489a7c12276
-size 349
+all: bin/iOmicsPASS
+
+objs = main globals subjectClass PAMClass geneClass
+objs := $(addsuffix .o, $(objs))
+objs := $(addprefix iOmicsPASS/src/, $(objs))
+CPPFLAGS = -Wall -O3 -std=c++0x -I./TMPLIB
+CPP = g++
+
+bin/iOmicsPASS: $(objs)
+	$(CPP) $(CPPFLAGS) -o $@ $(objs) 
+	rm -f $(objs)
+
+.PHONY : clean
+clean :
+	$(RM) bin/iOmicsPASS $(objs)

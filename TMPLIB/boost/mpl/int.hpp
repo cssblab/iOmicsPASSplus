@@ -1,3 +1,22 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:c9d44f893b56a5600aee6c0f086f6727b9708a1426c03aba3d53449428428c68
-size 542
+
+#ifndef BOOST_MPL_INT_HPP_INCLUDED
+#define BOOST_MPL_INT_HPP_INCLUDED
+
+// Copyright Aleksey Gurtovoy 2000-2004
+//
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
+// http://www.boost.org/LICENSE_1_0.txt)
+//
+// See http://www.boost.org/libs/mpl for documentation.
+
+// $Id$
+// $Date$
+// $Revision$
+
+#include <boost/mpl/int_fwd.hpp>
+
+#define AUX_WRAPPER_VALUE_TYPE int
+#include <boost/mpl/aux_/integral_wrapper.hpp>
+
+#endif // BOOST_MPL_INT_HPP_INCLUDED

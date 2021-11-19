@@ -1,3 +1,25 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:1a190b39e10af9d82f77a14880617e3a5869b9b74cb5269f6a61046bf80a8633
-size 723
+//  abi_prefix header  -------------------------------------------------------//
+
+// (c) Copyright John Maddock 2003
+   
+// Use, modification and distribution are subject to the Boost Software License,
+// Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt).
+
+#ifndef BOOST_CONFIG_ABI_PREFIX_HPP
+# define BOOST_CONFIG_ABI_PREFIX_HPP
+#else
+# error double inclusion of header boost/config/abi_prefix.hpp is an error
+#endif
+
+#include <boost/config.hpp>
+
+// this must occur after all other includes and before any code appears:
+#ifdef BOOST_HAS_ABI_HEADERS
+#  include BOOST_ABI_PREFIX
+#endif
+
+#if defined( __BORLANDC__ )
+#pragma nopushoptwarn
+#endif
+

@@ -1,3 +1,29 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a5f6ed32353345af2240e11b6e1c1c2b7e301a937191c9d4c10bf7e68d2bcfd4
-size 915
+/*=============================================================================
+    Copyright (c) 2009 Christopher Schmidt
+
+    Distributed under the Boost Software License, Version 1.0. (See accompanying
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+==============================================================================*/
+
+#ifndef BOOST_FUSION_VIEW_JOINT_VIEW_DETAIL_KEY_OF_IMPL_HPP
+#define BOOST_FUSION_VIEW_JOINT_VIEW_DETAIL_KEY_OF_IMPL_HPP
+
+#include <boost/fusion/support/config.hpp>
+#include <boost/fusion/iterator/key_of.hpp>
+
+namespace boost { namespace fusion { namespace extension
+{
+    template <typename>
+    struct key_of_impl;
+
+    template <>
+    struct key_of_impl<joint_view_iterator_tag>
+    {
+        template <typename It>
+        struct apply
+          : result_of::key_of<typename It::first_type>
+        {};
+    };
+}}}
+
+#endif
