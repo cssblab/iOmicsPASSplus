@@ -2,7 +2,9 @@
 ## Integrative -Omics Predictive Analysis of Subnetwork Signatures (Version II - *An R-package*)
 
 To start, either download `iOmicsPASSplus.zip` file and unzip to local directory or use command line/Terminal to clone the entire github directory:
-`> git clone https://github.com/cssblab/iOmicsPASSplus.git`
+```{bash eval=FALSE}
+> git clone https://github.com/cssblab/iOmicsPASSplus.git
+```
 
 ### Introduction
 
