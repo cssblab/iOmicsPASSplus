@@ -231,7 +231,6 @@ int main(int argc, char** argv) {
     	   map<string, set<string> > PATHmapEdge;
            vector<string> PATHs = createEdgeOrientedPathwayMap(&features,&Alledges, &PATHmap, &PATHmapEdge,UserInput->bgProp, UserInput->minbgSize);
            set<string> EdgeSurv_grp;
-
            for(int j=0; j<2;j++){
       		for(int i=0; i<grplab.size(); i++){
          	    EdgeSurv_grp = (geneSurv.at(j)).at(i);

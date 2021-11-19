@@ -3243,6 +3243,7 @@ string getTag(string str, map<string, string > *Map){
 void CreateOutput(string directory, string lab,vector<string> PATHlist,int dir, set<string> *geneLIST, set<string> *bgLIST, map<string, set<string> > *PATHEdgemap, map<string, set<string> > *PATHmap, map<string, string> *PATHwayAnnot,int mink){
 
   string DIR, Annot;
+    string geneSET="";
   if(dir==0) DIR = "up";
   if(dir==1) DIR ="down";
   vector<string> collect;
@@ -3251,7 +3252,7 @@ void CreateOutput(string directory, string lab,vector<string> PATHlist,int dir, 
   map<string, string>::iterator a_iter;
   vector<string> tmpVec,common_setV;
   ofstream outF(directory+lab+"_Enrichment_"+DIR+".txt");
-  outF <<"Pathway\tPathAnnotation\tHypergeoPval\tNumGene_inPathway\tNumGenes_inbg\tPropPathway\tNumEdgesformed_inbg\tEnriched_Edgesize\tGeneset_Enriched"<<endl;
+  outF<<"Pathway\tPathAnnotation\tHypergeoPval\tNumGene_inPathway\tNumGenes_inbg\tPropPathway\tNumEdgesformed_inbg\tEnriched_Edgesize\tGeneset_Enriched"<<endl;
   map<string, set<string> >::iterator M_iter, m_iter;
   
   for(it = bgLIST->begin(); it!= bgLIST->end(); it++){
@@ -3259,7 +3260,6 @@ void CreateOutput(string directory, string lab,vector<string> PATHlist,int dir, 
     AllG.insert((stringSplit2(tmpVec.at(0),"...")).at(0));
     AllG.insert((stringSplit2(tmpVec.at(1),"...")).at(0));
   }
-    
     for(it = geneLIST->begin(); it!= geneLIST->end(); it++){
       tmpVec = stringSplit2(*it,"___");
       All_genesignature.insert((stringSplit2(tmpVec.at(0),"...")).at(0));
@@ -3276,12 +3276,14 @@ void CreateOutput(string directory, string lab,vector<string> PATHlist,int dir, 
       Annot = a_iter->second;
       tmp_setN = IntersectSet(AllG, memGenes);
       common_set = IntersectSet(All_genesignature, tmp_setN);
-      common_setV = SetToVec(common_set);
-      string geneSET = concatenate(common_setV,';');
+      if(common_set.size()>0){
+          common_setV = SetToVec(common_set);
+          geneSET = concatenate(common_setV,';');
+      }
       double pp = (double) tmp_setN.size()/ (double) memGenes.size();
       vector<double> hyperpval = hypergeo(&memEdges, geneLIST, bgLIST);
       if(hyperpval[2]>=mink){
-            outF<<path<<"\t"<<Annot<<"\t"<<hyperpval.at(0)<<"\t"<< memGenes.size()<<"\t"<<tmp_setN.size()<<"\t"<<pp<<"\t"<<memEdges.size()<< "\t"<<hyperpval.at(2)<<"\t"<< geneSET<<endl;
+            outF<<path<<"\t"<<Annot<<"\t"<<hyperpval.at(0)<<"\t"<<memGenes.size()<<"\t"<<tmp_setN.size() <<"\t"<<pp<<"\t"<<memEdges.size()<< "\t"<<hyperpval.at(2)<<"\t"<< geneSET<<endl;
       }
   }
   outF.close();
