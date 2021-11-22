@@ -1,0 +1,571 @@
+
+---
+title: "iOmicsPASS+"
+author: "Hiromi WL Koh & Hyungwon Choi"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+subtitle: "Integrative -Omics Predictive Analysis of Subnetwork Signatures (Version II)" 
+output:
+  html_document:
+    toc: true
+    #toc_float: true
+vignette: >
+  %\VignetteIndexEntry{iOmicsPASS+}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+<style>
+body {
+  text-align: justify;
+  font-family: Helvetica;
+  font-size: 11pt;
+}
+header{
+  font-family: Helvetica;
+  font-size: 16pt;
+  font-style: bold;
+}
+</style>
+
+---
+
+```{r, echo=FALSE}
+
+htmltools::img(src = knitr::image_uri("C:/Users/mdckwlh/Desktop/iOmicsPASSv2plus_repo/vignettes/figures/iOmicsPASSv2plus_logo_small.png"), alt = 'logo', style="position:absolute; top:0; right:0; padding:5px;height:125px;width:200px")
+
+```
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  collapse = FALSE,
+  comment = "#>",
+  rmarkdown.html_vignette.check_title = FALSE
+)
+
+```
+
+## An Overview
+
+**iOmicsPASS+** is a R-package incorporating **iOmicsPASS** (Koh et al., 2019), extended to other types of -omics data allowing for flexibility and increasing usability. It includes several module including a network inference module `NetDeconvolute()` using graphical LASSO (glasso) to estimate a sparse inverse covariance matrix, creating a confounding-free partial correlation network among features from up to three -omics datasets.
+
+**iOmicsPASS** has been improved to **iOmicsPASS+** allowing for higher flexibility and enabling applications to different types of omics data. Improvements include:
+
+* **Specification of direction of association**\
+  Users may now specify the direction for every pair of interacting or co-varying molecule by adding an additional column in the network file. However, only molecules that show consistent sign of correlation in the empirical data as the user-specified direction will be considered.
+  
+* **Allows for a single network and input data**\
+  Previously, at least two data and two networks were required as input. Now, users can input only one single data and create co-expressions among the variables in the data with a single network file.
+  
+* **Addition of a Network estimation module** `NetDeconvolute()`\
+  Estimates a correlation network, linking the different features from up to three different data, using graphical LASSO (glasso) to estimate a sparse inverse covariance matrix, creating a confounding-free partial correlation network
+  
+* **New functions to help users compile and run iOmicsPASS using R**\
+  Functions included in the R package facilitate users to build `INSTALL.iOmicsPASS()`, create input parameter file `createInputParam()`, create prior probabilities `createPrior()` and run the software `iOmicsPASS.R()` in the R-console.
+  
+* **Addition of a Prediction module** `Predict.iOmicsPASS()`\
+  Uses the network signatures identified in the subentwork discovery module `iOmicsPASS.R()`to assign new samples to the phenotypic groups.
+  
+* **Adjustment for clinical information**\
+  Users can incorporate clinical information such as age, gender and BMI, to modify the prior class probabilities used for assigning samples to the different groups.
+
+The figure below illustrates the overview of **iOmicsPASS+**
+
+```{r fig.align="center", echo=FALSE, out.width = '90%'}
+knitr::include_graphics("figures/Overview_iOmicsPASSplus.png")
+```
+
+This vignette will cover the use of the various modularities in the R-package using a plasma protein and microRNA example datasets. For more information regarding the previous software (**iOmicsPASS**), refer to Koh et. al.(https://www.nature.com/articles/s41540-019-0099-y).
+
+## Setting up iOmicsPASS+
+
+Users can either clone the github repository (https://github.com/cssblab/iOmicsPASSplus/) or download the zip-file directly to your local directory. Then extract the folder to install the R-package in R or R studio (download from https://cran.r-project.org).
+
+To clone the repository to your local directory, in your command-line/Terminal window:
+```{bash eval=FALSE}
+> git clone https://github.com/cssblab/iOmicsPASSplus.git
+```
+
+The software relies on `gcc` compiler to compile **iOmicsPASS** from within the R console. It also makes use of part of the boost library, distributed along with the software package under the Boost Software License (https://www.boost.org/LICENSE_1_0.txt). 
+
+The R-packages has several external dependencies and its recommended that users install `Rtools` (https://cran.r-project.org/bin/windows/Rtools/) and the R-package `devtools` to allow for automatic installation of the dependencies:
+```{r eval=FALSE}
+if (!require(devtools)) install.packages("devtools")
+```
+
+### For Windows users
+Executables for 64-bit Windows are included in the zip folder for direct use of **iOmicsPASS**. Else, installation of Cygwin is required (download available at https://www.cygwin.com/) to compile **iOmicsPASS**. Individual packages such as `bash`, `make` and `gcc` are released independently. Upon running setup, select `gcc` and `make` which is needed for compiling iOmicsPASS.
+
+After picking the appropriate mirror in Cygwin installation, in the select packages menu, select "Full" in `View` drop-down menu:
+
+```{r fig.align="center", echo=FALSE, out.width = '100%'}
+knitr::include_graphics("figures/Cygwin_screenshot1.png")
+```
+
+Then, select search for `gcc` and `make` to right-click and install the latest packages. Click on Next to start the installation.
+
+```{r fig.align="center", echo=FALSE, out.width = '100%'}
+knitr::include_graphics("figures/Cygwin_screenshot2.png")
+knitr::include_graphics("figures/Cygwin_screenshot3.png")
+```
+
+After installation, ensure that the directory is added to the system Path environment variable by navigating through the following:
+
+`My Computer > Control Panel > Systems > Advanced system settings > Environment variable`
+
+Then, click on edit to add `C:/cygwin64/bin` manually or use command prompt to create or set a variable permanently (as Administrator) by typing:
+```{bash eval=FALSE}
+> setx PATH "C:/cygwin64/bin"
+```
+
+### For Mac OS X/Linux users
+You will require a GNU compiler to compile the C++ program which is available with the full installation of `Xcode` in Mac OS.
+
+To make sure that "usr/local/bin" is already added in your Path variables, type the following in **Terminal**:
+```{bash eval=FALSE}
+> PATH=$PATH:/usr/local/bin/
+```
+Note: You may need to restart your computer for the changes to take effect.
+
+### in R console
+After cloning the repository **iOmicsPASSplus** from github or unzipping the zip folder, in R, set the working directory to the extracted folder and install the R-package as follows:
+```{r eval=FALSE}
+setwd("C:/PATH_TO_PROGRAM/iOmicsPASSplus/")
+devtools::install_local("iOmicsPASSplus.tar.gz", dependencies =T)
+## Alternatively ##
+devtools::install_github("CSSBlab/iOmicsPASSplus", build_vignettes = TRUE)
+
+# load the library
+library(iOmicsPASSplus)
+## only need to be run once to compile iOmicsPASS, creating a program in /bin folder.
+INSTALL.iOmicsPASS()
+
+```
+
+
+## Data: Plasma Protein and MicroRNA Biomarkers of Insulin Resistance
+  
+To illustrate the use of the various modules in the R-package, we will utilize the plasma protein and microRNA datasets from the [Khoo et al., 2019](https://www.frontiersin.org/articles/10.3389/fphys.2019.00379/full) measured among 8 obese insulin-resistant (OIR, HOMA-IR>2.5) and 9 lean insulin-sensitive (LIS, HOMA-IR<1.0) normoglyceric males. The dataset `PhenotypeFile` describes the phenotype group of the 17 study participants as well as their age and BMI.
+
+The example protein data `Tulip_Protein` contains 266 protein expression values across 17 samples. The original data contains 1,499 proteins and only those that were different between OIR and LIS (p-value <0.1) using 2-sample t-test were included in this example dataset.
+
+The example microRNA data `Tulip_microRNA` contains 263 normalized microRNA copy number across 17 samples, quantified using multiplex RT-qPCR platform (MiRXES). The original data contains 368 microRNA probes and similarly, only those that were different between OIR and LIS (p-value <0.1) using 2-sample t-test were included in this example dataset.
+
+```{r,echo=FALSE}
+library(iOmicsPASSplus)
+```
+
+```{r}
+## load the example data ##
+data(Tulip_Protein)
+data(Tulip_microRNA)
+data(PhenotypeFile)
+
+head(Tulip_Protein[,c(1:6)])
+
+head(Tulip_microRNA[,c(1:6)])
+
+head(PhenotypeFile)
+
+```
+
+### Example Network files and pathways for Enrichment ###
+Distributed along with the R-package is two network files: (1) Protein-protein interaction (PPI) file and (2) microRNA-gene target file. The prior is a collection of protein interactions from iRefIndex and BioPlex 2.0, and the latter is experimentally validated microRNAs to gene targets from TargetScan. Also, we consolidated biological processes and pathways from ConsenusPathDB and Gene Ontology (GO) for the pathway enrichment module.
+
+For the network files, the first two columns should be the names of the pair of interacting or associated features. The third column specifies the sign of the interaction/association. For PPI network, the sign of interaction will be "1" to indicate positive regulation and for microRNA-gene taget network, the signs will be "-1" to indicate negative inhibition.
+
+```{r}
+
+data(PPI_network)
+data(TargetScan_network)
+
+head(PPI_network)
+head(TargetScan_network)
+```
+
+For the biological pathway file, there should be three columns specifying the feature name, pathway identifier and description of the pathway, respectively.
+```{r}
+data(bioPathways)
+head(bioPathways)
+```
+## Network Inference Module #NetDeconvolute()
+
+This module estimates a sparse partial correlation network between the different types of data, using an existing R-package `Huge` which carries out GLASSO. Users can specify up to three types of data for the network inference. Each data is first standardized to unit standard deviation and concatenated into a single matrix. Then, principal component analysis (PCA) is used to identify any potential outliers (i.e. more than 4 SDs from the median of PC1 and PC2).
+
+There are two proposed ways to create a pseudo network: (1) **Supervised approach** that is completely driven by the data and (2) **Hybrid approach** that combines a known network as prior and network derived from the data to produce a resulting network. 
+
+The **supervised approach** is useful when studying a less well-annotated organism such as a new strain of viruses or a community of bacteria of which little understanding of how the biological system functions. Whereas a **hybrid approach** may be more useful when there is limited understanding of how the various biomolecules interact or co-vary in abundance. For instance, lipid species from the same class tend to show correlated variation across biological conditions, but there remains little understanding of how various lipid species from different class interact with one another.
+
+### Supervised approach
+
+In the supervised approach, the sample covariance matrix $S$ is computed and corrected to the nearest positive semi-definite (PSD) matrix if any of its eigenvalues are negative using the approach by [Nicholas J. Higham, 1988](https://www.sciencedirect.com/science/article/pii/0024379588902236). Upon ensuring that the covariance matrix satisfies the PSD property, graphical LASSO in `huge` R package is carried out next. A vector of lambda values are used to tune the $L_1$-penalty term in the model to yield a grid of corresponding penalized log-likelihoods. 
+
+In `NetDeconvolute()` function, model selection criteria, including AIC, BIC, e-BIC and cross-validation (CV), are incorporated to help users to select an optimal regularization parameter $\lambda$ that minimizes AIC, BIC, e-BIC or maximizes the CV value. Users may choose to specify their own vector of lambda values, otherwise, the software will automatically generate a grid of 30 lambda values that is exponentially decreasing from 1 to 0.01:
+$$\lambda_{grid} =\{\lambda_1,\lambda_2,...,\lambda_{30}\}= exp\{log(1),log(0.853),…,log(0.01)\}.$$
+ 
+  The selected regularization parameter $\lambda$ is then used to refit the GLASSO model to yield the corresponding precision matrix and the partial correlation matrix. The non-zero entries in this matrix is then converted into an edge-level network file, indicating the direction of association, to be used for running the predictive analysis module `iOmicsPASS.R()`. The partial correlation between molecule $𝑖$ and $𝑗$ is calculated by [Mohsen Pourahmadi, 2011](https://projecteuclid.org/journals/statistical-science/volume-26/issue-3/Covariance-Estimation-The-GLM-and-Regularization-Perspectives/10.1214/11-STS358.full):
+
+$$ \tilde{\rho}_{i,j} = \frac{- \hat{\omega}_{i,j}}{\sqrt{\hat{\omega}_{i,j} \hat{\omega}_{i,j}}}$$
+
+where $\hat{\omega}_{i,j}$ represents the $(i,j)^{th}$ entry in the estimated precision matrix, $\hat{\Omega}$.
+
+
+#### Example
+
+Here, lets try to estimate a network connecting the plasma protein and microRNA dataset using the supervised approach. First, let us perform calibration to try to find the optimal $\lambda$ value. It does not matter which criterion to choose for now as all four model selection criteria will be plotted if `Calibration=TRUE`. However, if $n<<p$, it's recommended to use extended-BIC (eBIC) to assess the model fit. 
+
+```{r, eval=F}
+## creating an list object containing the two datasets and labeling them accordingly
+row.names(Tulip_Protein) = Tulip_Protein$Protein
+row.names(Tulip_microRNA) = Tulip_microRNA$miRNA
+Tulip_Protein = Tulip_Protein[,-1]
+Tulip_microRNA = Tulip_microRNA[,-1]
+inputDat=list(Tulip_Protein, Tulip_microRNA)
+names(inputDat) = c("Protein","microRNA")
+
+NetDeconvolute(inputDat, option=1,log.transform=TRUE, tag="supervised",criterion="eBIC",Calibration=TRUE, verbose=T)
+```
+
+Graphical outputs such as boxplots and PCA plots are generated by default to help users to identify possible outlying samples that will be colored in red. Here, all the 17 samples passed the quality check (QC).
+
+```{r fig.align="center", echo=FALSE, out.width = '60%'}
+knitr::include_graphics("figures/DataQCplots.png")
+```
+
+At the same time, the function will also produce the heatmap of the cross-covariance matrix, concatenating the datasets after standardization.
+```{r fig.align="center", echo=FALSE, out.width = '50%'}
+knitr::include_graphics("figures/Heatmap_CrossCovarianceMatrix_supervised2.png")
+```
+
+Next, inspecting the calibration plots, we noticed that the four model criterion starts declining steeply after 0.6 and there is a dip in between 0.2 to 0.5 for eBIC. 
+
+```{r fig.align="center", echo=FALSE, out.width = '70%'}
+knitr::include_graphics("figures/CalibrationPlots_glasso_supervised.png")
+
+```
+
+Thus, we shall re-define a narrower lambda vector for running the model fit again.
+```{r eval=F}
+## Refining a narrower lambda vector ##
+lambda_new=exp(seq(log(0.5),log(0.01), length=30))
+NetDeconvolute(inputDat, option=1,log.transform=TRUE, tag="supervised2",criterion="eBIC", Calibration=TRUE, lambda.vec=lambda_new, verbose=T)
+```
+
+Let us now inspect the new calibration plots, we see that the model fit achieved the lowest eBIC when $\lambda=0.382$  and highest cross-validation score at $\lambda=0.194$. 
+
+```{r fig.align="center", echo=FALSE, out.width = '70%'}
+knitr::include_graphics("figures/CalibrationPlots_glasso_supervised2.png")
+```
+
+We will select $\lambda=0.382$ and set `Calibration=FALSE` to continue the estimation of the precision matrix.\
+```{r eval=F}
+NetDeconvolute(inputDat, option=1,log.transform=TRUE,tag="supervised",criterion="eBIC",
+Calibration=FALSE, optLambda=0.382,verbose=TRUE)
+```
+
+Along with several `.txt` files as output, a graphical output consisting of four heatmaps showing the progression of the sample covariance matrix (top left), to the correction to the nearest SPD matrix (top right), to the estimated precision matrix (bottom left) and the corresponding adjacency matrix (bottom right) that forms the estimated network.
+```{r fig.align="center", echo=FALSE, out.width = '70%'}
+knitr::include_graphics("figures/Plots_glasso_supervised.png")
+```
+
+There are four `.txt` file output generated and they include:
+
+* `Combined_data.txt`\
+  A data matrix with $p$ rows (total features) across $n$ samples derived by concatenating the different input data after standardizing and removing plausible outliers (data QC step).
+
+* `glasso_estimated_icov.txt`\
+  A sparse $p\times p$ data matrix describing the estimated inverse covariance matrix or the precision matrix. The zero entries describe conditional-independence among the pair of features.
+
+* `PartialCorrelation_icov.txt`\
+  A sparse $p\times p$ data matrix describing the partial correlation between each pair of feature converted from the estimated inverse covariance matrix or the precision matrix.
+  
+* `Estimated_Network_glasso.txt`\
+  A data file with seven columns (i.e. nodeA, nodeB, dir, partialcor, DatatypeA, DatatypeB, EdgeType) and each row describing a pair of feature that have an non-zero entry in the estimated precision matrix. The data is in the format required as a network file in running the predictive analysis module `iOmicsPASS.R`.
+  
+**Note:** Both `Combined_data.txt` and `Estimated_Network_glasso.txt` will be copied and placed in `/iOmicsPASS/inputFiles/` folder automatically for the predictive subnetwork discovery module.
+
+### Hybrid approach
+
+In this approach, users can supplement a network file with known relationships between features and using it as a prior (matrix $P$) and GLASSO from the **supervised approach** will also be carried to estimate a network (matrix $\hat{\Omega}$). Then, both networks are combined to yield a fused network (matrix $F$).
+
+Let us first define the following matrices:
+
+
+$$
+\begin{aligned}
+  &\text{Prior network matrix:}   &&P_{p×p}=(p_{ij})\in \{-1,0,1\}\\
+  &\text{Estimated Precision matrix (GLASSO):} &&\Omega_{p×p}=(\omega_{ij})\in[-1,1]\\
+  &\text{Sample covariance matrix: } && S_{p×p}= (s_{ij} )\in[-1,1].
+\end{aligned}
+$$
+
+
+Then we can create the following matrices:
+
+$$\begin{aligned}
+\text{Matrix }  A&:(a_{ij})=\begin{cases}
+  sign(\tilde{\rho}_{i,j}), &&\text{if}\ i\neq j \\
+  0, &&\text{if}\ i=j.
+\end{cases}\\
+\text{Matrix } U&:(u_{ij})=sign(a_{ij}+p_{ij}).
+\end{aligned}$$
+
+where the entries in $A$ denote the sign of the partial correlation and the entries in $U$ represent the agreement in the signs of the non-zero entries in matrix $A$ and $P$. If the direction of association between feature $i$ and $j$ specified in the prior is different from what is observed in the data (i.e. $a_{ij}=1$, $p_{ij}=-1$ or $a_{ij}=-1$,$p_{ij}=1$), the entry becomes zero. 
+
+Next, we extract the corresponding elementwise sample covariances in $S$ from the non-zero entries in matrix $U$ by defining the Hadamard product of the two matrices to result in a non-negative matrix:
+$B=U∘S$
+
+A score matrix $S^*$, constrained between 0 to 1, can be computed as follows:
+
+$$\begin{aligned}
+\text{Matrix} S^* =(s^*_{ij})=\begin{cases}
+  &-\frac{\lvert b^\prime_{ij}\rvert}{b_{max}}, &&\text{if}\ a_{ij}=0,\ p_{ij}\neq 0, \\
+  &\frac{|b^\prime_{ij}|}{b_{max}}, &&\textit{otherwise}.
+\end{cases}
+\end{aligned}$$
+
+
+where $B^\prime=(b^\prime_{ij})= BWB^T$ and $b_{max}=\max\limits_{i,j}b^\prime_{ij}$. Here, the matrix $W=\frac{1}{2} (\lvert A+P \rvert)$ is a weight matrix taking values $0, 0.5$ and $1$.
+
+Lastly, a fused matrix F is computed by:
+$$F=U\circ(P+S^*),$$
+adding to the prior if the edge is supported by what is estimated in $\hat{Ω}$ (i.e. $\hat{\omega}_{i,j}\neq 0$), or penalizing the prior if the edge is present in the prior but not supported by the estimated network (i.e. $\hat{\omega}_{i,j}=0$). 
+The final network is generated by forming an edge between feature $i$ and $j$ if the absolute value in $(i,j)^{th}$ entry of matrix $F$ is at least $0.5$ and the direction of association of the edge is determined by the sign of the entry.
+
+#### Example
+
+Now, lets try to use the **Hybrid approach** to estimate the network connecting proteins and microRNAs by supplementing known microRNA-gene target network and protein-protein interaction (PPI) network. First let us look at the two network files. Each network file should have the first two columns describing the two features that are interacting with eachother and the third column should describe the direction of association/interaction (i.e. positive regulation or negative inhibition). 
+
+For microRNA-gene target network, the direction specified are all "$-1$"s since we expect higher levels of microRNAs to inhibit the transciptional activity of their target genes. For PPI network, the direction specified are all "$1$"s since they are physiochemically interacting with eachother.
+
+```{r, eval=T}
+data(TargetScan_network)
+data(PPI_network)
+
+head(TargetScan_network)
+head(PPI_network)
+```
+
+Before we can put it into the function, we will have to tell the software which feature came from which data type by creating additional fourth and fifth columns and labeling them with either $X$, $Y$ or $Z$ and concatenate both networks into one single data.frame for input.
+
+**Note**: It is not important how the data.frame is labeled but the order in which the columns are placed have to be as described below.
+
+```{r, eval=T}
+TargetScan_network$NodeA_DT = "X"
+TargetScan_network$NodeB_DT = "Y"
+PPI_network$NodeA_DT = "X"
+PPI_network$NodeB_DT = "X"
+colnames(TargetScan_network) = c("NodeA","NodeB","Dir","NodeA_DT","NodeB_DT")
+colnames(PPI_network) = c("NodeA","NodeB","Dir","NodeA_DT","NodeB_DT")
+PriorNet = rbind(TargetScan_network,PPI_network)
+
+head(PriorNet)
+```
+Now we can supplement the prior network file and change `option=2` and modify the `tag` so that the output files will not be over written. Here, we do not have to run calibration again since we have done that earlier and we can directly use `optLambda=0.382` for the estimation of the inverse covariance matrix using GLASSO.
+```{r, eval=F}
+NetDeconvolute(inputDat, option=2, NetworkFile=PriorNet, tag="hybrid",criterion="eBIC",
+log.transform=TRUE,Calibration=FALSE, optLambda=0.382, verbose=TRUE)
+```
+
+The graphical output consists of six heatmaps showing the progression of the sample covariance matrix $S$ (top left), to the estimated precision matrix $\hat{\Omega}$ via GLASSO (top middle), to the corresponding adjacency matrix (top right), the supplemented prior matrix $P$ (bottom left), the resultant fused matrix $F$ (bottom middle) and the corresponding adjacency matrix (bottom right) forms the estimated fused network.\
+
+```{r fig.align="center", echo=FALSE, out.width = '85%'}
+knitr::include_graphics("figures/Plots_Hybridmethod_hybrid.png")
+```
+
+Similarly, there will be four `.txt` file output. Instead of `Estimated_Network_glasso.txt`, `Fusednetwork_hybridmethod.txt` will be created:
+
+* `Combined_data.txt`\
+  A data matrix with $p$ rows (total features) across $n$ samples derived by concatenating the different input data after standardizing and removing plausible outliers (data QC step).
+
+* `glasso_estimated_icov.txt`\
+  A sparse $p\times p$ data matrix describing the estimated inverse covariance matrix or the precision matrix. The zero entries describe conditional-independence among the pair of features.
+
+* `PartialCorrelation_icov.txt`\
+  A sparse $p\times p$ data matrix describing the partial correlation between each pair of feature converted from the estimated inverse covariance matrix or the precision matrix.
+*Fusednetwork_hybridmethod.txt
+
+* `Fusednetwork_hybridmethod.txt`\
+A data file with seven columns (i.e. nodeA, nodeB, dir, partialcor, DatatypeA, DatatypeB, EdgeType) and each row describing a pair of feature that have an non-zero entry in the estimated precision matrix. The data is in the format required as a network file in running the predictive analysis module `iOmicsPASS.R`.
+  
+  **Note:** Both `Combined_data.txt` and `Fusednetwork_hybridmethod.txt` will be copied and placed in `/iOmicsPASS/inputFiles/` folder automatically for the predictive subnetwork discovery module.
+
+## Subnetwork discovery module #iOmicsPASS.R()
+
+This module carries out the predictive analysis of subnetwork discovery. The function integrates multiple -omics datasets utilizing biological network information and uses a shrunken centroid algorithm modified from PAM by [Tibshirani et al., 2002](https://www.pnas.org/content/99/10/6567) to pick **network signatures** that can best distinguish between different phenotypes. It is a supervised method where the classification of the samples is known in the training data. The tool can be applied in clinical settings, to better understand the biological mechanisms underlying the differences across groups of samples (e.g. when comparing disease versus non-disease group) in studies with multiple related -omics data.
+
+The details of the method can be found in the [Koh et al., 2019](https://www.nature.com/articles/s41540-019-0099-y). In this version released, we have made the tool more flexible and allow for predictive analysis on a single dataset with a single network to construct interaction edges within the features in the data. It also allow for specification of signed interactions in the network file to cater to positive regulation or negative inhibition of expression levels. 
+
+
+### Input Parameter file for iOmicsPASS
+
+Before running `iOmicsPASS.R()`, we need to create a parameter file using `createInputParam()` function to feed the tool the necessary information to carry out the analysis.
+
+
+|Arguments | Type      |Description |         
+|------|------|-------------------------|
+|**`data.X`**| *String/data.frame* | Dataframe for data X. If String, it should corresponds to the filename of data. Input for data.X is required.|
+|**`data.Y`**| *string/data.frame* | Dataframe for data Y. If String, it should corresponds to the filename of data. |
+|**`data.Z`**| *string/data.frame* | Dataframe for data Z. If String, it should corresponds to the filename of data.  |
+|**`within.net`**| *string/data.frame*|Dataframe for pathway file connecting features within data.X. If String, it should corresponds to the filename.|
+|**`btw.net`**| *string/data.frame*|Dataframe for pathway file connecting features between data.X and data.Y. If String, it should corresponds to the filename.|
+|**`phenotype`** | *string/data.frame*|Dataframe for pathway file connecting features between data.X and data.Y. If String, it should corresponds to the filename.|
+|**`pathway`**|*string/data.frame* |Dataframe for the phenotype/group information where the labels should match the columns in data.X, data.Y, data.Z. If String, it should corresponds to the filename.|
+|**`priorfile`**| *string/data.frame* |Dataframe of the file containing the prior probabilities of each sample belonging to the different phenotypes/groups. If String, it should corresponds to |the filename.|
+|**`dir`** | *string* |Directory of all the input files (default = `/iOmicsPASS/inputFiles/`)|
+|**`standardize.data`**| *boolean* <TRUE/FALSE> |whether to standardize each data (default=TRUE)|
+|**`log.transform`**| *boolean* <TRUE/FALSE> |whether to log-transform each data (default=FALSE)|
+|**`normalizedBy`**| *boolean* <TRUE/FALSE> |Either "Y" or "Z". if "Y", interaction scores in data.X are normalized by same feature in data.Y and if "Z", scores in X are normalized by same feature in data.Z.|
+|**`min.obs`**| *int* |minimum number of non-missing observations requires across each feature in each phenotypic group|
+|**`min.prop`**| *float* |minimum proportion of non-missing observations requires across each feature in each phenotypic group|
+|**`knn.impute`**| *boolean* <TRUE/FALSE> |whether to perform K-nearest neighbor imputation for missing entries|
+|**`knn.k`**| *int* |number of folds for K-nearest neighbor imputation |
+|**`max.block.impute`**| *int* |number of blocks of samples to consider in KNN imputation
+|**`Cross.Validate`**| *boolean* <TRUE/FALSE> |Whether to run cross-validation (default=TRUE)|
+|**`num.Kfold`**| *int* |number of folds in Cross.Validate|
+|**`min.thres`**| *float* |threshold to be used to derive the shrunken centroids|
+|**`usePrior`**| *boolean* <TRUE/FALSE> |whether to use an input prior to classify samples in discriminant model. If false, equal prior will be used.(default=FALSE)|
+|**`tag`**| *string* |minimum number of features in each pathway that are both part of the signature and present in the background list.|
+|**`Enrichment`**| *boolean* <TRUE/FALSE> |whether to run network enrichment (default=TRUE)|
+|**`bg.prop`**| *boolean* <TRUE/FALSE> |minimum proportion of features in each pathway that are also present in the background list.|
+|**`min.bg.size`**| *int*|minimum number of features in each pathway that are also present in the background list. |
+|**`min.sig.size`**| *int* |minimum number of features in each pathway that are both part of the signature and present in the background list. |\\
+
+
+### Illustration: 
+
+Let first use known biological network (i.e. PPI network and microRNA-gene target network) to link features between the microRNA and protein data for the identification of predictive signatures. By default, `Cross.Validate=TRUE` which prompts the tool to quit after performing the cross-validation across a grid of thresholds. This is to reduce computation-time and users can set `Cross.Validate=FALSE` after selecting a single threshold that optimizes the number of selected features and at the same time minimizing the misclassification error.
+
+
+```{r, eval=F}
+## Using known biological networks ##
+createInputParam(data.X=Tulip_Protein,data.Y=Tulip_microRNA,phenotype=PhenotypeFile,log.transform=TRUE,btw.net=TargetScan_network,within.net=PPI_network, Cross.Validate = TRUE, Enrichment=FALSE, tag="KnownNetwork")
+
+## run iOmicsPASS to create the misclassification error plot for picking threshold
+## by Default, all results will be output to /iOmicsPASS/Output/.
+iOmicsPASS.output<-iOmicsPASS.R(ff="input_param_KnownNetwork")
+```
+
+This will yield a `CVerrors.txt` file with the overall and class-specific mean classification errors over the 10-fold cross-validation. It will also generate a `CVplot_penalty.pdf`:
+
+```{r fig.align="center", echo=FALSE, out.width = '70%'}
+knitr::include_graphics("figures/CVplot_Penalty_KnownNetwork.png")
+```
+
+The plot suggests that the overall error remains flat at zero and eventually started to incur error after threshold = 3.53, thus we pick the optimal threshold as 3.53 and turn off CV by setting `Cross.Validate=FALSE` and `plotCV=FALSE`. We will need to re-create a input parameter file and run iOmicsPASS at each iteration.
+
+```{r, eval=F}
+## rerun with threshold = 3.53 ##
+createInputParam(data.X=Tulip_Protein,data.Y=Tulip_microRNA,phenotype =PhenotypeFile,
+log.transform=TRUE,btw.net=TargetScan_network,within.net=PPI_network, Enrichment=FALSE, tag="KnownNetwork", min.thres=3.53,Cross.Validate=FALSE)
+
+## run iOmicsPASS and set plotCV=FALSE ##
+iOmicsPASS.output<-iOmicsPASS.R(ff="input_param_KnownNetwork", plotCV=FALSE, Cross.Validate = FALSE)
+
+## Or, you can also carry out pathway enrichment on the selected proteins by setting Enrichment=TRUE ##
+createInputParam(data.X=Tulip_Protein,data.Y=Tulip_microRNA,phenotype =PhenotypeFile, log.transform=TRUE,btw.net=TargetScan_network,within.net=PPI_network, pathway = bioPathways, Enrichment=TRUE, tag="withEnrichment", min.thres=3.53,Cross.Validate=FALSE)
+
+iOmicsPASS.output<-iOmicsPASS.R(ff="input_param_withEnrichment", plotCV=FALSE, Cross.Validate = FALSE)
+```
+
+This results in a final selection of 90 network edges with 0% test error. Multiple `.txt` files are produced in `/iOmicsPASS/Output/` directory:
+
+* `EdgesSelected_minThres.txt`\
+  A table reporting the set of predictive features and the edge type (i.e. either between or within), as well as and the $d^*_{ik}$ scores and direction associated with each phenotypic group.The file can be imported to **Cytoscape** for visualization as network file.
+  
+* `AttributesTable.txt`\
+  A node attribute file reporting each single node in the network, the data type and whether it survived or died in the shrunken centroid estimation. If the node was selected as a marker, it will be presented as either **datX** or **datY**. The file can be imoprted to **Cytoscape** as table file.
+
+* `Ztransform_dataX.txt/Ztranform_dataY.txt`\
+  A data matrix after log-transformation and standardization. (reported only if `standardize.data=TRUE`)
+
+* `Expressiondata_edges.txt`\
+  A data matrix reporting the interaction scores for every pair of network edges formed across the samples.
+
+* `SampleClass_Probabilities.txt`\
+  A data.frame reporting the class probabilities, true class and predicted class for each sample.
+
+* `PredictiveEdges_Parameters.txt`\
+A data.frame containing the predictive subnetwork parameters (training data) required for classification of new samples (test data).
+
+* `BGlist.txt`\
+  A list of unique network edges constructed from all features that is used as background for the enrichment module.
+
+* `XX_Enrichment_up.txt/ XX_Enrichment_down.txt`\
+  A data.frame with 8 columns reporting the biological pathways that the features are over/under-represented in, using hypergeometric test. The columns are reported in the following order: Pathway ID, Pathway name, hypergeometric P-value, number of features in the pathway, number of genes that are in both the background list and pathway, proportion represented in the pathway present in the background, number of network edges formed in the background and number of network edges that are part of the predictive signatures for that phenotypic group/outcome.
+  
+**Note:** In this example, there's no enrichment of pathways as too few proteins were selected as markers in the network signature. 
+
+**Choice of threshold through cross-validation**:
+The tool, by default, will use the threshold that yields the smallest misclassification error to select features if no threshold is specified. At times, this may not be the most desirable method. For instance, there are many thresholds with similar misclassification error rates, yet the numerically optimal threshold leads to selection of too many features (i.e. there is an alternative threshold with far sparser and more interpretable size of networks).
+
+The CV plot helps visualize of the mean misclassification error of the CVs over the a grid of possible thresholds (default size 30). In the plot, a dotted line indicates one SD above the minimum misclassification error is drawn. Users can select a threshold that produces a more sparse network which maintains the core constituents of predictive network. More generally, the user can then make an informed decision as to where to choose the optimal threshold where the trade-of between misclassification error rate and the number of selected features is balanced. \
+
+
+Using Cytoscape, we used the first two output files and created the following predictive network, linking plasma proteins with microRNA. Since there were only two phenotypic groups to distinguish, the signatures for one group would be naturally be the signatures for the other group. here we simply visualize the network for OIR patients.
+
+```{r fig.align="center", echo=FALSE, out.width = '90%'}
+knitr::include_graphics("figures/Network_OIR.png")
+```
+
+Alternatively, we can use the estimated correlation network earlier (e.g. from hybrid approach) to run iOmicsPASS by creating a input parameter file specifying the file name of the concatenated data `Combined_data.txt` and estimated network `Fusednetwork_hybridmethod.txt`. Since the data has already been standardized and log-transformed, we will set `log.transform=FALSE` and `standardize.data = FALSE`.
+```{r, eval=F}
+## Running with estimated glasso network from supervised approach ##
+createInputParam(data.X="Combined_data.txt", within.net="Fusednetwork_hybridmethod.txt",
+phenotype =PhenotypeFile,log.transform=FALSE, standardize.data = FALSE,Cross.Validate = TRUE,Enrichment=FALSE, tag="hybridNetwork")
+
+iOmicsPASS.supervisednet <-iOmicsPASS.R(ff="input_param_hybridNetwork")
+```
+
+The CV plot produced:
+```{r fig.align="center", echo=FALSE, out.width = '70%'}
+knitr::include_graphics("figures/CVplot_Penalty_Hybrid.png")
+```
+
+Although the plot show zero CV error when threshold is below 1, we do not want to pick a threshold that results in too many network edges. Thus, we select threshold=3.4 which occurs at the dip and giving a low mean misclassification error rate of 11.7% with 113 edges (mean number of edges from the 10-fold CVs). We will re-run iOmicsPASS with this selected threshold and turn off CV options.
+
+```{r, eval=F}
+createInputParam(data.X="Combined_data.txt", within.net="Fusednetwork_hybridmethod.txt",
+phenotype =PhenotypeFile,log.transform=FALSE, standardize.data = FALSE,min.thres=3.3, Cross.Validate = FALSE,pathway=bioPathways,Enrichment=TRUE, tag="hybridNetwork")
+
+iOmicsPASS.supervisednet <-iOmicsPASS.R(ff="input_param_hybridNetwork",Cross.Validate = F, plotCV = F)
+
+```
+
+### Incorporating clinical variables
+
+We can manipulate the prior probabilities used to assign samples to the two groups using `createPrior`. A logistic model (for two groups) or multinomial logistics model (for more than 2 groups) is fitted on the clinical variables to yield prior class probabilities and the output can be fed into iOmicsPASS by setting `usePrior=TRUE` and specifying the name of the file in `iOmicsPASS.R`
+
+Using a phenotype file, we set the row names as the sample identifier and the file should include the grouping variable and other clinical variables that you want to adjust for.
+
+```{r, eval=T}
+data(PhenotypeFile)
+PhenotypeFile2 = PhenotypeFile
+row.names(PhenotypeFile2) = PhenotypeFile$TulipID
+PhenotypeFile2=PhenotypeFile2[,-1]
+head(PhenotypeFile2)
+```
+
+Let us create prior probabilities using age and BMI and tell `createPrior` function that the grouping variables is labelled "Group". In this example, there are no categorical variables but if there are any, you will have to specify the column labels using `var.cat`. Else, the function will assume all are continuous variables.
+
+
+```{r, eval=F,warning=F, echo=T}
+priorProb = createPrior(PhenotypeFile2, y = "Group",outputDir = "/iOmicsPASS/inputFiles/")
+head(priorProb)
+```
+```{r, eval=T, echo=F}
+priorProb = read.delim("../iOmicsPASS/inputFiles/PriorProb.txt",as.is=T) 
+head(priorProb)
+```
+
+Next, we re-run iOmicsPASS+ with the new prior probabilities and set `usePrior = TRUE`.
+```{r, eval=F}
+createInputParam(data.X=Tulip_Protein,data.Y=Tulip_microRNA,phenotype =PhenotypeFile, log.transform=TRUE,btw.net=TargetScan_network,within.net=PPI_network,tag="withPrior", Cross.Validate=T, usePrior = T, priorfile = priorProb)
+
+iOmicsPASS.output<-iOmicsPASS.R(ff="input_param_withPrior")
+
+```
+
+**Note**: The examples are not completely reproducible due to the random number generator used for cross-validation. Thus, there may be small discrepancies. We also note that every data set is different and no single approach is typically recommended. Instead, one should explore different analysis approach to pick the best one that fit his or her data. 
+
+**_As Occam's razor suggests, simplicity is the best_**
+<a href="#top">Back to top</a>
