@@ -1186,6 +1186,25 @@ createPrior <-function(FILE, y = NULL,var.cat=NULL,testFile=NULL,predict=FALSE, 
 INSTALL.iOmicsPASS<- function(currDir=NULL){
   if(is.null(currDir)) currDir = getwd()
   system(paste0("cd ",currDir))
+
+  if (!file.exists("bin")){
+    dir.create("bin")
+  }
+
+  if (!file.exists("Input")){
+    dir.create("Input")
+  }
+
+  if (!file.exists("Output")){
+    dir.create("Output")
+  }
+  if (!file.exists("iOmicsPASS/inputFiles")){
+    dir.create("iOmicsPASS/inputFiles")
+  }
+  if (!file.exists("iOmicsPASS/Output")){
+    dir.create("iOmicsPASS/Output")
+  }
+
   system("make")
 }
 
