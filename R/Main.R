@@ -20,8 +20,10 @@
 #' @param NetworkFile prior network file. File should indicate which data type the feature comes from (i.e. X or Y) using "NodeA_DT" and "NodeB_DT"
 #' in case of same gene name. Required if option=2 (hybrid).
 #' @param cutoff_fusedmat cut-off value between 0 to 1 used to convert the fused matrix into an adjacency matrix.
-#' @param standardization whether to carry out standardization for each data in inputDat.
-#' @param log.transform whether to log-transform each matrix in inputDat (default=TRUE)
+#' @param standardization whether to carry out standardization for each data in inputDat. Recommended if integrating multiple datasets before computing cross-covariance matrix.
+#' @param log.transform whether to log-transform each matrix in inputDat (default=TRUE).
+#' @param toSkipPCA whether to carry out principal component analysis, not recommended if there are too many missing entries in data (default = FALSE).
+#' @param useCorrelation whether to compute correlation instead of covariance matrix (default = FALSE). If correlation is selected, standardization of variables is not required.
 #' @param Plot.PCA whether to output the plots of PCA of the input data (default=TRUE)
 #' @param Plot.modelSelect whether to output the plots to help pick a regularization parameter based on AIC, BIC, eBIC and CV (default=TRUE).
 #' @param Plot.Covariance whether to output the heatmap illustrating the cross-covariance matrix. Not recommended if the dimension of the matrix exceeds 2000.
@@ -64,10 +66,20 @@
 #' #######################
 #' # supervised approach #
 #' #######################
+#'
+#' ## using covariance matrix to estimate network ##
 #' NetDeconvolute(inputDat, option=1,log.transform=TRUE, tag="supervised",criterion="eBIC",
 #' Calibration=TRUE, verbose=T)
 #'
-#' ## you can also refine your lambda vector ##
+#' ###using correlation matrix to estimate network ###
+#' NetDeconvolute(inputDat, option=1,log.transform=TRUE, tag= "correlation",criterion="eBIC",
+#' Calibration=TRUE, useCorrelation=T, standardization=F, verbose=T)
+#'
+#' #' ### Note that after standardization, covariance and correlation is the same ###
+#' ### Correlation can be used if data cannot be standardized, for example when looking at changes (post-pre) ###
+#'
+#' ## continuing if using covariance since we are working with expression data,
+#' ## we refine the lambda vector to zoom into a specific window ##
 #' lambda_new=exp(seq(log(0.5),log(0.01), length=30))
 #'
 #' NetDeconvolute(inputDat, option=1,log.transform=TRUE, tag= "supervised2",criterion="eBIC",
@@ -77,6 +89,7 @@
 #' # Then turn off calibration to FALSE to re-running the cross-validation for glasso.
 #' NetDeconvolute(inputDat, option=1,log.transform=TRUE,tag= "supervised",criterion="eBIC",
 #' Calibration=FALSE, optLambda=0.38,verbose=TRUE)
+#'
 #'
 #' ###################
 #' # hybrid approach #
@@ -95,6 +108,7 @@
 #' NetDeconvolute(inputDat, option=2, NetworkFile=PriorNet, tag="hybrid",criterion="eBIC",
 #' log.transform=TRUE,Calibration=FALSE, optLambda=0.382, verbose=TRUE)
 #'
+#'
 #' @Note The higher the total dimensionality of the data, the longer it will take to run the
 #' program. It's suggested to turn Plot.Covariance = FALSE when dimensionality is larger than 2000.
 #' @export
@@ -105,10 +119,14 @@
 #' @importFrom pracma nearest_spd eig
 #' @importFrom RColorBrewer brewer.pal
 NetDeconvolute <- function(inputDat ,detectOutliers=TRUE, option, Calibration=TRUE, tag= NULL,log.transform =TRUE,cutoff_fusedmat=0.5,
-                           standardization=TRUE, NetworkFile= NULL, Plot.PCA=TRUE , Plot.modelSelect = TRUE, Plot.Covariance = TRUE,
+                           standardization=TRUE, NetworkFile= NULL,  toSkipPCA = FALSE, Plot.PCA=TRUE , Plot.modelSelect = TRUE, Plot.Covariance = TRUE,useCorrelation=FALSE,
                            lambda.vec = NULL, numLambda=30, numFolds=5,criterion=c("AIC","BIC","eBIC","CV"),optLambda=NULL, verbose = F){
 
-  ## data cleaning ##
+
+  if (!file.exists("Output")){
+    dir.create("Output")
+  }
+   ## data cleaning ##
   ntype = length(inputDat)
 
   if(ntype>3) {
@@ -143,8 +161,8 @@ NetDeconvolute <- function(inputDat ,detectOutliers=TRUE, option, Calibration=TR
   for(i in 1:ntype){
     tmpD = inputDat[[i]]
     tmpDnew = tmpD[,match(commonS, colnames(tmpD))]
-    if(any(is.na(tmpDnew))|(any(tmpDnew==0) & log.transform==TRUE)){
-      stop("There are missing/zero entries in the input data. Please remove or impute the missing/zero entries before carrying out NetworkDeconvolute()!\n")
+    if((any(tmpDnew==0) & log.transform==TRUE)){
+      stop("Unable to take log-transform as there are zero entries in the input data. Please check again!\n")
     }
     inputDat[[i]] = tmpDnew
   }
@@ -164,8 +182,8 @@ NetDeconvolute <- function(inputDat ,detectOutliers=TRUE, option, Calibration=TR
   if(standardization){
     for(i in 1:ntype){
       tmpDD = inputDat[[i]]
-      mnX = apply(tmpDD,1, mean)
-      sdX = apply(tmpDD,1, sd)
+      mnX = apply(tmpDD,1,function(x) mean(x,na.rm=T))
+      sdX = apply(tmpDD,1, function(x) sd(x,na.rm=T))
       cenX = sweep(tmpDD,1,mnX)
       #mad = apply(tmpDD,1,median)
       Zdat[[i]] = cenX/sdX
@@ -223,117 +241,147 @@ NetDeconvolute <- function(inputDat ,detectOutliers=TRUE, option, Calibration=TR
 
   limits = c(min(DAT, na.rm=T), max(DAT, na.rm=T))
 
-  tmpPCA = prcomp(t(DAT), center = T)
-  xx = tmpPCA$x
-  dev = (tmpPCA$sdev/sum(tmpPCA$sdev))*100
-
-  if(ntype>1){
-    tmpPCA2 = prcomp(t(ZdatX), center = T)
-    xx2 = tmpPCA2$x
-    dev2 = (tmpPCA2$sdev/sum(tmpPCA2$sdev))*100
-
-    tmpPCA3 = prcomp(t(ZdatY), center = T)
-    xx3 = tmpPCA3$x
-    dev3 = (tmpPCA3$sdev/sum(tmpPCA3$sdev))*100
-
-    if(ntype==3){
-      tmpPCA4 = prcomp(t(ZdatZ), center = T)
-      xx4 = tmpPCA4$x
-      dev4 = (tmpPCA4$sdev/sum(tmpPCA4$sdev))*100
+  if(any(is.na(DAT))){
+    cid_rm = apply(DAT,1,function(x) sum(is.na(x)))
+    if(any(cid_rm> 0.5*ncol(DAT))) stop("There are features with more than 50% missing measurements across all the samples. Please impute or reduce the proportion of missingness before running NetDeconvolute()!\n")
+    cid_na = apply(DAT,1,function(x) any(is.na(x)))
+    if(sum(cid_na) >0.3*nrow(DAT)){
+      cat("There are >30% of the features with missing measurements, we will skip PCA and not perform outlier removal.\n")
+      toSkipPCA=TRUE
+      detectOutliers=TRUE
     }
+    if(sum(cid_na) <=0.3*nrow(DAT)) DAT.pca = DAT[!cid_na,]
   }
 
-  ### identifying outliers ###
+  if(all(!is.na(DAT))) DAT.pca = DAT
 
-  if(detectOutliers){
-    cat("Carrying out outlier detection step...\n")
-    bound1 = 4*sd(xx[,1])
-    bound2 = 4*sd(xx[,2])
-    mm1 = median(xx[,1])
-    mm2 = median(xx[,2])
-    cid_out = which((xx[,1] > (mm1+bound1))|(xx[,1]< (mm1 - bound1))|(xx[,2] > (mm2+bound2))|(xx[,2]< (mm2 - bound2)))
-    outlier = colnames(DAT)[cid_out]
+  if(!toSkipPCA){
+    tmpPCA = prcomp(t(DAT.pca), center = T)
+    xx = tmpPCA$x
+    dev = (tmpPCA$sdev/sum(tmpPCA$sdev))*100
 
-    ht = 5
-    if(ntype>1) ht = ht*(ntype)
-
-    file <- "Output/Boxplot_outliers"
-    if(!is.null(tag)) filenew = paste0(file,"_",tag,".pdf")
-    else filenew <- "Output/Boxplot_outliers.pdf"
-
-    pdf(filenew,height=ht,width=12,useDingbats = F)
-    if(ntype>1) par(mfrow=c(ntype,1),las=2)
-    else par(las=2)
-    cc = rep("grey70", ncol(DAT))
-    if(length(cid_out)>0) cc[cid_out]= "firebrick1"
-
-    boxplot(ZdatX,col = cc, cex=0.7,outline=F, main=paste0(str[1]," data"),xaxt="n")
-    if(length(cid_out)>0)axis(1, at=c(1:ncol(ZdatX))[-cid_out],labels=colnames(DAT)[-cid_out], cex.axis=0.7, las=2)
-    if(length(cid_out)>0)axis(1, at=cid_out,labels=outlier, cex.axis=0.7, las=2, col.axis="red")
     if(ntype>1){
-      boxplot(ZdatY,col = cc, cex=0.7,outline=F, main=paste0(str[2]," data"),xaxt="n")
-      if(length(cid_out)>0)axis(1, at=c(1:ncol(ZdatY))[-cid_out],labels=colnames(DAT)[-cid_out], cex.axis=0.7, las=2)
-      if(length(cid_out)>0)axis(1, at=cid_out,labels=outlier, cex.axis=0.7, las=2, col.axis="red")
+      if(any(is.na(ZdatX))){
+        cid_rm = apply(ZdatX,2,function(x) any(is.na(x)))
+        ZdatX.pca = ZdatX[,!cid_rm]
+      }
+      if(all(!is.na(ZdatX))) ZdatX.pca = ZdatX
+      tmpPCA2 = prcomp(t(ZdatX.pca), center = T)
+      xx2 = tmpPCA2$x
+      dev2 = (tmpPCA2$sdev/sum(tmpPCA2$sdev))*100
+
+      if(any(is.na(ZdatY))){
+        cid_rm = apply(ZdatY,2,function(x) any(is.na(x)))
+        ZdatY.pca = ZdatY[,!cid_rm]
+      }
+      if(all(!is.na(ZdatY))) ZdatY.pca = ZdatY
+      tmpPCA3 = prcomp(t(ZdatY.pca), center = T)
+      xx3 = tmpPCA3$x
+      dev3 = (tmpPCA3$sdev/sum(tmpPCA3$sdev))*100
+
       if(ntype==3){
-        boxplot(ZdatZ,col = cc, cex=0.7,outline=F, main=paste0(str[3]," data"),xaxt="n")
-        if(length(cid_out)>0)axis(1, at=c(1:ncol(ZdatZ))[-cid_out],labels=colnames(DAT)[-cid_out], cex.axis=0.7, las=2)
+        if(any(is.na(ZdatZ))){
+          cid_rm = apply(ZdatZ,2,function(x) any(is.na(x)))
+          ZdatZ.pca = ZdatZ[,!cid_rm]
+        }
+        if(all(!is.na(ZdatZ))) ZdatZ.pca = ZdatZ
+        tmpPCA4 = prcomp(t(ZdatZ.pca), center = T)
+        xx4 = tmpPCA4$x
+        dev4 = (tmpPCA4$sdev/sum(tmpPCA4$sdev))*100
+      }
+      ### identifying outliers ###
+
+      if(detectOutliers){
+        cat("Carrying out outlier detection step...\n")
+        bound1 = 4*sd(xx[,1])
+        bound2 = 4*sd(xx[,2])
+        mm1 = median(xx[,1])
+        mm2 = median(xx[,2])
+        cid_out = which((xx[,1] > (mm1+bound1))|(xx[,1]< (mm1 - bound1))|(xx[,2] > (mm2+bound2))|(xx[,2]< (mm2 - bound2)))
+        outlier = colnames(DAT)[cid_out]
+
+        ht = 5
+        if(ntype>1) ht = ht*(ntype)
+
+        file <- "Output/Boxplot_outliers"
+        if(!is.null(tag)) filenew = paste0(file,"_",tag,".pdf")
+        else filenew <- "Output/Boxplot_outliers.pdf"
+
+        pdf(filenew,height=ht,width=12,useDingbats = F)
+        if(ntype>1) par(mfrow=c(ntype,1),las=2)
+        else par(las=2)
+        cc = rep("grey70", ncol(DAT))
+        if(length(cid_out)>0) cc[cid_out]= "firebrick1"
+
+        boxplot(ZdatX,col = cc, cex=0.7,outline=F, main=paste0(str[1]," data"),xaxt="n")
+        if(length(cid_out)>0)axis(1, at=c(1:ncol(ZdatX))[-cid_out],labels=colnames(DAT)[-cid_out], cex.axis=0.7, las=2)
         if(length(cid_out)>0)axis(1, at=cid_out,labels=outlier, cex.axis=0.7, las=2, col.axis="red")
-      }
-    }
-    dev.off()
-    if(verbose){
-      if(length(outlier)==0) cat("No outliers were identified in this step.\n\nProceeding on...\n")
-      if(length(outlier)==1) cat(paste0("1 outlier (", outlier  ,") was removed.\n\nProceeding on...\n"))
-      if(length(outlier)>1) cat(paste0(length(outlier)," outliers (",paste0(outlier,collapse=","),") were removed.\n\nProceeding on...\n"))
-    }
-    ## remove outliers identified ##
-    if(length(cid_out)>0){
-      DAT = DAT[,-cid_out]
-      ZdatX = ZdatX[,-cid_out]
-      if(ntype>1)ZdatY = ZdatY[,-cid_out]
-      if(ntype==3)ZdatZ = ZdatZ[,-cid_out]
-    }
-
-  }
-  if(!detectOutliers) cat("Skipping outlier detection step...\n")
-
-  if(Plot.PCA){
-    len = 5.5
-    new.main = "all"
-    if(ntype>1) len = len*(ntype+1)
-    if(ntype==1) new.main = str[1]
-
-    file <- "Output/PCAplot"
-    if(!is.null(tag)) filenew = paste0(file,"_",tag,".pdf")
-    else filenew <- "Output/PCAplot.pdf"
-
-    pdf(filenew,height=5,width=len,useDingbats = F)
-    if(ntype>1) par(mfrow=c(1,ntype+1))
-    plot(xx[,1], xx[,2], xlab=paste0("PC1 (",round(dev[1], 1),"%)"), ylab = paste0("PC2 (",round(dev[2], 1),"%)"), main=paste0("PCA on ",new.main," data"),  pch=16)
-    if(length(outlier)>0){
-      points(xx[cid_out,1], xx[cid_out,2], col=2, pch=16, cex=1.1)
-      text(xx[cid_out,1], xx[cid_out,2], col=2,labels =outlier, pos = 4)
-    }
-    if(ntype>1){
-      plot(xx2[,1], xx2[,2], xlab=paste0("PC1 (",round(dev2[1], 1),"%)"), ylab = paste0("PC2 (",round(dev2[2], 1),"%)"), main=paste0("PCA on ", str[1]," data"), pch=16)
-      if(length(outlier)>0){
-        points(xx2[cid_out,1], xx2[cid_out,2], col=2, pch=16, cex=1.1)
-        text(xx2[cid_out,1], xx2[cid_out,2], col=2,labels =outlier, pos = 4)
-      }
-      plot(xx3[,1], xx3[,2], xlab=paste0("PC1 (",round(dev3[1], 1),"%)"), ylab = paste0("PC2 (",round(dev3[2], 1),"%)"), main=paste0("PCA on ", str[2]," data"), pch=16)
-      if(length(outlier)>0){
-        points(xx3[cid_out,1], xx3[cid_out,2], col=2, pch=16, cex=1.1)
-        text(xx3[cid_out,1], xx3[cid_out,2], col=2,labels =outlier, pos = 4)
-      }
-      if(ntype==3){
-        plot(xx4[,1], xx4[,2], xlab=paste0("PC1 (",round(dev4[1], 1),"%)"), ylab = paste0("PC2 (",round(dev4[2], 1),"%)"), main=paste0("PCA on ", str[3]," data"), pch=16)
-        if(length(outlier)>0){
-          points(xx4[cid_out,1], xx4[cid_out,2], col=2, pch=16, cex=1.1)
-          text(xx4[cid_out,1], xx4[cid_out,2], col=2,labels =outlier, pos = 4)
+        if(ntype>1){
+          boxplot(ZdatY,col = cc, cex=0.7,outline=F, main=paste0(str[2]," data"),xaxt="n")
+          if(length(cid_out)>0)axis(1, at=c(1:ncol(ZdatY))[-cid_out],labels=colnames(DAT)[-cid_out], cex.axis=0.7, las=2)
+          if(length(cid_out)>0)axis(1, at=cid_out,labels=outlier, cex.axis=0.7, las=2, col.axis="red")
+          if(ntype==3){
+            boxplot(ZdatZ,col = cc, cex=0.7,outline=F, main=paste0(str[3]," data"),xaxt="n")
+            if(length(cid_out)>0)axis(1, at=c(1:ncol(ZdatZ))[-cid_out],labels=colnames(DAT)[-cid_out], cex.axis=0.7, las=2)
+            if(length(cid_out)>0)axis(1, at=cid_out,labels=outlier, cex.axis=0.7, las=2, col.axis="red")
+          }
+        }
+        dev.off()
+        if(verbose){
+          if(length(outlier)==0) cat("No outliers were identified in this step.\n\nProceeding on...\n")
+          if(length(outlier)==1) cat(paste0("1 outlier (", outlier  ,") was removed.\n\nProceeding on...\n"))
+          if(length(outlier)>1) cat(paste0(length(outlier)," outliers (",paste0(outlier,collapse=","),") were removed.\n\nProceeding on...\n"))
+        }
+        ## remove outliers identified ##
+        if(length(cid_out)>0){
+          RM = match(outlier, colnames(DAT))
+          DAT = DAT[,-RM]
+          ZdatX = ZdatX[,-RM]
+          if(ntype>1)ZdatY = ZdatY[,-RM]
+          if(ntype==3)ZdatZ = ZdatZ[,-RM]
         }
       }
+      if(!detectOutliers) cat("Skipping outlier detection step...\n")
+
+      if(Plot.PCA){
+        len = 5.5
+        new.main = "all"
+        if(ntype>1) len = len*(ntype+1)
+        if(ntype==1) new.main = str[1]
+
+        file <- "Output/PCAplot"
+        if(!is.null(tag)) filenew = paste0(file,"_",tag,".pdf")
+        else filenew <- "Output/PCAplot.pdf"
+
+        pdf(filenew,height=5,width=len,useDingbats = F)
+        if(ntype>1) par(mfrow=c(1,ntype+1))
+        plot(xx[,1], xx[,2], xlab=paste0("PC1 (",round(dev[1], 1),"%)"), ylab = paste0("PC2 (",round(dev[2], 1),"%)"), main=paste0("PCA on ",new.main," data"),  pch=16)
+        if(length(outlier)>0){
+          points(xx[cid_out,1], xx[cid_out,2], col=2, pch=16, cex=1.1)
+          text(xx[cid_out,1], xx[cid_out,2], col=2,labels =outlier, pos = 4)
+        }
+        if(ntype>1){
+          plot(xx2[,1], xx2[,2], xlab=paste0("PC1 (",round(dev2[1], 1),"%)"), ylab = paste0("PC2 (",round(dev2[2], 1),"%)"), main=paste0("PCA on ", str[1]," data"), pch=16)
+          if(length(outlier)>0){
+            points(xx2[cid_out,1], xx2[cid_out,2], col=2, pch=16, cex=1.1)
+            text(xx2[cid_out,1], xx2[cid_out,2], col=2,labels =outlier, pos = 4)
+          }
+          plot(xx3[,1], xx3[,2], xlab=paste0("PC1 (",round(dev3[1], 1),"%)"), ylab = paste0("PC2 (",round(dev3[2], 1),"%)"), main=paste0("PCA on ", str[2]," data"), pch=16)
+          if(length(outlier)>0){
+            points(xx3[cid_out,1], xx3[cid_out,2], col=2, pch=16, cex=1.1)
+            text(xx3[cid_out,1], xx3[cid_out,2], col=2,labels =outlier, pos = 4)
+          }
+          if(ntype==3){
+            plot(xx4[,1], xx4[,2], xlab=paste0("PC1 (",round(dev4[1], 1),"%)"), ylab = paste0("PC2 (",round(dev4[2], 1),"%)"), main=paste0("PCA on ", str[3]," data"), pch=16)
+            if(length(outlier)>0){
+              points(xx4[cid_out,1], xx4[cid_out,2], col=2, pch=16, cex=1.1)
+              text(xx4[cid_out,1], xx4[cid_out,2], col=2,labels =outlier, pos = 4)
+            }
+          }
+        }
+        dev.off()
+      }
     }
-     dev.off()
   }
 
 
@@ -343,9 +391,9 @@ NetDeconvolute <- function(inputDat ,detectOutliers=TRUE, option, Calibration=TR
   ## Option 1: unsupervised approach (uses glasso to identify sparse precision matrix to derive adjacency matrix)
   ## Option 2: hybrid approach (fusion of networks)
     if(option==1|option==2){
-    ## Option 2: unsupervised approach (uses glasso to identify sparse precision matrix to derive adjacency matrix)
-    COVmat = cov(t(DAT))
 
+    if(!useCorrelation) COVmat = cov(t(DAT),use = "pairwise.complete.obs")
+    if(useCorrelation ) COVmat = cor(t(DAT),use = "pairwise.complete.obs")
     col <- colorRampPalette(brewer.pal(10, "RdYlBu"))(20)
     type =NULL
     for(i in 1:ntype){
@@ -404,14 +452,17 @@ NetDeconvolute <- function(inputDat ,detectOutliers=TRUE, option, Calibration=TR
 
 
     }
-
-    ### Given S is your covariance matrix ###
-    if(!checkSPD(COVmat)){
-      Snew = make.positive.definite(COVmat)
-      Fnorm.diff = norm(Snew - COVmat, type = 'F')  ## you can use this to check the difference in the norm of the PSD corrected matrix
-      cat("Input cross-covariance matrix is not positive definite.\nFinding nearest positive semi-definite matrix with a frobenius norm difference of", Fnorm.diff,"\n")
+    if(useCorrelation) Snew = COVmat
+    if(!useCorrelation){
+      ### Given S is your covariance matrix ###
+      if(!checkSPD(COVmat)){
+        Snew = make.positive.definite(COVmat)
+        Fnorm.diff = norm(Snew - COVmat, type = 'F')  ## you can use this to check the difference in the norm of the PSD corrected matrix
+        cat("Input cross-covariance matrix is not positive definite.\nFinding nearest positive semi-definite matrix with a frobenius norm difference of", Fnorm.diff,"\n")
+      }
+      if(checkSPD(COVmat)) Snew = COVmat
     }
-    if(checkSPD(COVmat)) Snew = COVmat
+
     cat("\nCarrying out graphical lasso, this may take a while...\n\n")
     n<- ncol(DAT)
 
@@ -434,7 +485,7 @@ NetDeconvolute <- function(inputDat ,detectOutliers=TRUE, option, Calibration=TR
         timePar = " hour(s)"
       }
       cat(paste0("Completed in ",round(timeDiff,3), timePar, ", moving on to cross validation.\n"))
-      CVtest = glasso_cv(t(DAT), nfolds=numFolds, rholist=lambda.vec,nlambda=numLambda,verbose=verbose)
+      CVtest = glasso_cv(t(DAT), nfolds=numFolds,cor=useCorrelation, rholist=lambda.vec,nlambda=numLambda,verbose=verbose)
       c = Sys.time()
       timeDiff = c-b
       timePar = " minutes"

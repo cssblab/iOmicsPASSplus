@@ -38,21 +38,27 @@ cvFolds<-function (n, K = 5, R = 1, type = c("random", "consecutive", "interleav
   folds
 }
 
-log_likelihood <- function(precision, TEST) {
+log_likelihood <- function(precision, TEST, useCorr = F) {
 
   p <- nrow(precision)
   n <- nrow(TEST)
-  emp_cov <- cov(TEST)
+  if(!useCorr) emp_cov <- cov(TEST, use="pairwise.complete.obs")
+  if(useCorr) emp_cov <- cor(TEST, use="pairwise.complete.obs")
   logdet <- determinant(precision, logarithm=T)$modulus
   loglik <- n * (logdet - sum(diag(emp_cov %*% precision)))
   #loglik <- logdet - sum(diag(emp_cov %*% precision))
   return(as.numeric(loglik))
 }
-CV_score <- function(precision, TEST) {
+CV_score <- function(precision, TEST, useCorr =F) {
+
   p <- nrow(precision)
   n <- nrow(TEST)
-  emp_cov <- cov(TEST)
+
+  if(!useCorr) emp_cov <- cov(TEST, use="pairwise.complete.obs")
+  if(useCorr) emp_cov <- cor(TEST, use="pairwise.complete.obs")
   logdet <- determinant(precision, logarithm=T)$modulus
+
+  if(any(is.na(TEST))) TEST[is.na(TEST)] <- 0
 
   loglik <- 0
   for(k in 1:nrow(TEST)){
@@ -64,8 +70,8 @@ CV_score <- function(precision, TEST) {
 
 glasso_cv <- function(ts, cor = FALSE, nfolds=5, rholist=NULL,nlambda = 30 ,lambda.min.ratio =0.1,verbose=T) {
 
-  if(!cor) S <- cov(ts)
-  if(cor) S <- cor(ts)
+  if(!cor) S <- cov(ts, use="pairwise.complete.obs")
+  if(cor) S <- cor(ts, use="pairwise.complete.obs")
   p <-ncol(ts)
   n <-nrow(ts)
   if (is.null(rholist)) {
@@ -82,29 +88,30 @@ glasso_cv <- function(ts, cor = FALSE, nfolds=5, rholist=NULL,nlambda = 30 ,lamb
     mat_test = ts[folds$which==ki,]
 
     if(!cor) {
-      S_train <- cov(mat_train)
-      S_test  <- cov(mat_test)
+      S_train <- cov(mat_train, use="pairwise.complete.obs")
+      S_test  <- cov(mat_test, use="pairwise.complete.obs")
     }
     if(cor) {
-      S_train <- cor(mat_train)
-      S_test  <- cor(mat_test)
+      S_train <- cor(mat_train, use="pairwise.complete.obs")
+      S_test  <- cor(mat_test, use="pairwise.complete.obs")
     }
 
     curr_n <-nrow(mat_train)
     p <- ncol(mat_train)
-
-    if(checkSPD(S_train)) S <- S_train
-    if(!checkSPD(S_train)) S<- nearest_spd(S_train)
-
+    if(cor) S <- S_train
+    if(!cor){
+      if(checkSPD(S_train)) S <- S_train
+      if(!checkSPD(S_train)) S<- nearest_spd(S_train)
+    }
     GLP   <- huge(S, rholist , method = "glasso", scr=F)
 
     #loglike <- lapply(GLP$icov,function(P_train) log_likelihood(P_train, mat_test))
-    CV_k <- lapply(GLP$icov,function(P_train) CV_score(P_train, mat_test))
+    CV_k <- lapply(GLP$icov,function(P_train) CV_score(P_train, mat_test, useCorr=cor))
     CV_k
   })
 
   CV.score = matrix(unlist(CVscore),nrow=nlambda,ncol=nfolds)
-  rowSum = apply(CV.score,1, sum)
+  rowSum = apply(CV.score,1, function(x)sum(x,na.rm=T))
 
   ind     <- which.max(rowSum)
   rhomax  <- rholist[ind]
@@ -277,10 +284,18 @@ Network2Adj<-function(MAT, dir, ff=NULL,  PartialCor,reportCor=FALSE){
       RET = rbind(RET, tmpD)
     }
   }
-
+  RET = reduceRedundancy(RET)
   RET
 }
 
+
+reduceRedundancy<-function(NET){
+  cidd = 1:nrow(NET)
+  orgEdge = apply(NET[,-3],1,function(x){paste0(x, collapse = "@__@")})
+  collect_edge = apply(NET[,-3],1,function(x){x=x[order(x)]; paste0(x, collapse = "@__@")})
+  torm = which(duplicated(collect_edge))
+  NET_new = NET[-torm,]
+}
 
 getsigns<- function(matrixA,matrixP){
   ret = matrix(0, nrow= nrow(matrixA), ncol= ncol(matrixA))

@@ -14,9 +14,11 @@ NetDeconvolute(
   cutoff_fusedmat = 0.5,
   standardization = TRUE,
   NetworkFile = NULL,
+  toSkipPCA = FALSE,
   Plot.PCA = TRUE,
   Plot.modelSelect = TRUE,
   Plot.Covariance = TRUE,
+  useCorrelation = FALSE,
   lambda.vec = NULL,
   numLambda = 30,
   numFolds = 5,
@@ -36,20 +38,24 @@ NetDeconvolute(
 
 \item{tag}{a string that will be appended to the end of the output files like a tag.}
 
-\item{log.transform}{whether to log-transform each matrix in inputDat (default=TRUE)}
+\item{log.transform}{whether to log-transform each matrix in inputDat (default=TRUE).}
 
 \item{cutoff_fusedmat}{cut-off value between 0 to 1 used to convert the fused matrix into an adjacency matrix.}
 
-\item{standardization}{whether to carry out standardization for each data in inputDat.}
+\item{standardization}{whether to carry out standardization for each data in inputDat. Recommended if integrating multiple datasets before computing cross-covariance matrix.}
 
 \item{NetworkFile}{prior network file. File should indicate which data type the feature comes from (i.e. X or Y) using "NodeA_DT" and "NodeB_DT"
 in case of same gene name. Required if option=2 (hybrid).}
+
+\item{toSkipPCA}{whether to carry out principal component analysis, not recommended if there are too many missing entries in data (default = FALSE).}
 
 \item{Plot.PCA}{whether to output the plots of PCA of the input data (default=TRUE)}
 
 \item{Plot.modelSelect}{whether to output the plots to help pick a regularization parameter based on AIC, BIC, eBIC and CV (default=TRUE).}
 
 \item{Plot.Covariance}{whether to output the heatmap illustrating the cross-covariance matrix. Not recommended if the dimension of the matrix exceeds 2000.}
+
+\item{useCorrelation}{whether to compute correlation instead of covariance matrix (default = FALSE). If correlation is selected, standardization of variables is not required.}
 
 \item{lambda.vec}{a vector of regularization parameter to use in the soft-thresholding in glasso.}
 
@@ -101,10 +107,20 @@ names(inputDat) = c("Protein","microRNA")
 #######################
 # supervised approach #
 #######################
+
+## using covariance matrix to estimate network ##
 NetDeconvolute(inputDat, option=1,log.transform=TRUE, tag="supervised",criterion="eBIC",
 Calibration=TRUE, verbose=T)
 
-## you can also refine your lambda vector ##
+###using correlation matrix to estimate network ###
+NetDeconvolute(inputDat, option=1,log.transform=TRUE, tag= "correlation",criterion="eBIC",
+Calibration=TRUE, useCorrelation=T, standardization=F, verbose=T)
+
+#' ### Note that after standardization, covariance and correlation is the same ###
+### Correlation can be used if data cannot be standardized, for example when looking at changes (post-pre) ###
+
+## continuing if using covariance since we are working with expression data,
+## we refine the lambda vector to zoom into a specific window ##
 lambda_new=exp(seq(log(0.5),log(0.01), length=30))
 
 NetDeconvolute(inputDat, option=1,log.transform=TRUE, tag= "supervised2",criterion="eBIC",
@@ -114,6 +130,7 @@ Calibration=TRUE, lambda.vec=lambda_new, verbose=T)
 # Then turn off calibration to FALSE to re-running the cross-validation for glasso.
 NetDeconvolute(inputDat, option=1,log.transform=TRUE,tag= "supervised",criterion="eBIC",
 Calibration=FALSE, optLambda=0.38,verbose=TRUE)
+
 
 ###################
 # hybrid approach #
@@ -131,5 +148,6 @@ PriorNet = rbind(TargetScan_network,PPI_network)
 
 NetDeconvolute(inputDat, option=2, NetworkFile=PriorNet, tag="hybrid",criterion="eBIC",
 log.transform=TRUE,Calibration=FALSE, optLambda=0.382, verbose=TRUE)
+
 
 }
