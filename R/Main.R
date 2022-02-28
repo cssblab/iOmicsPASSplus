@@ -1424,8 +1424,8 @@ Predict.iOmicsPASS <- function(file, newData ,standardize = TRUE, usePrior=FALSE
     colnames(DISCRIMINANT) = gg
   }
 
-  Min = apply(DISCRIMINANT,1, min)
-  DISCRIMINANT_new = sweep(DISCRIMINANT,1, FUN="-",Min)
+  Max = apply(DISCRIMINANT,1, max)
+  DISCRIMINANT_new = sweep(DISCRIMINANT,1, FUN="-",Max)
   PROB = exp(-0.5*DISCRIMINANT_new)
 
   probSUM = apply(PROB,1,function(x) sum(x,na.rm=T))
