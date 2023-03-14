@@ -8,7 +8,7 @@ To start, either download `iOmicsPASSplus.zip` file and unzip to local directory
 
 ### Introduction
 
-**iOmicsPASS+** is a R-package incorporating **iOmicsPASS** (Koh et al., 2019), extended to other types of -omics data allowing for flexibility and increasing usability. It includes several module including a network inference module `NetDeconvolute()` using graphical LASSO (glasso) to estimate a sparse inverse covariance matrix, creating a confounding-free partial correlation network among features from up to three -omics datasets.
+**iOmicsPASS+** is a R-package incorporating **iOmicsPASS** (<a href="https://www.nature.com/articles/s41540-019-0099-y" target="_blank">Koh et al., 2019</a>), extended to other types of -omics data allowing for flexibility and increasing usability. It includes several module including a network inference module `NetDeconvolute()` using graphical LASSO (glasso) to estimate a sparse inverse covariance matrix, creating a confounding-free partial correlation network among features from up to three -omics datasets.
 
 **iOmicsPASS** has been improved to **iOmicsPASS+** allowing for higher flexibility and enabling applications to different types of omics data. Improvements include:
 
