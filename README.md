@@ -8,12 +8,12 @@ To start, either download `iOmicsPASSplus.zip` file and unzip to local directory
 
 ### Introduction
 
-**iOmicsPASS+** is a R-package incorporating **iOmicsPASS** (<a href="https://www.nature.com/articles/s41540-019-0099-y" target="_blank">Koh et al., 2019</a>), extended to other types of -omics data allowing for flexibility and increasing usability. It includes several module including a network inference module `NetDeconvolute()` using graphical LASSO (glasso) to estimate a sparse inverse covariance matrix, creating a confounding-free partial correlation network among features from up to three -omics datasets.
+**iOmicsPASS+** is a R-package incorporating **iOmicsPASS** (<a href="https://www.nature.com/articles/s41540-019-0099-y" target="_blank">Koh et al., 2019</a>), extended to other types of -omics data allowing for flexibility and increasing usability. It includes several module including a network inference module `NetDeconvolute()` using graphical LASSO (glasso) to estimate a sparse inverse covariance matrix, creating a confounding-free partial correlation network among features from up to three types of -omics datasets.
 
 **iOmicsPASS** has been improved to **iOmicsPASS+** allowing for higher flexibility and enabling applications to different types of omics data. Improvements include:
 
 * **Specification of direction of association**\
-  Users may now specify the direction for every pair of interacting or co-varying molecule by adding an additional column in the network file. However, only molecules that show consistent sign of correlation in the empirical data as the user-specified direction will be considered.
+  Users may now specify the direction for every pair of interacting or co-varying molecule by adding an additional column in the network file. However, only molecules that show a concordance in the sign of correlation in the empirical data as the user-specified direction of association will be considered.
   
 * **Allows for a single network and input data**\
   Previously, at least two data and two networks were required as input. Now, users can input only one single data and create co-expressions among the variables in the data with a single network file.
