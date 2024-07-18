@@ -638,11 +638,11 @@ NetDeconvolute <- function(inputDat ,detectOutliers=TRUE, option, Calibration=TR
         tttrow= factor(KEY$DataType[match(rr, KEY$Label)],labels= unique(KEY$DataType))
         tttcol= factor(KEY$DataType[match(cc, KEY$Label)],labels= unique(KEY$DataType))
         if (ntype == 1) {
-         # CCnew = CC[1]
+          CCnew = CC[1]
           ttt2row = str
           ttt2col = str
-         # names(CCnew) = str
-         # ann_col <- list(DataType = CCnew)
+          names(CCnew) = str
+          ann_col <- list(DataType = CCnew)
         }
         if(ntype==2) {
           CCnew = CC[1:2]
@@ -805,11 +805,11 @@ NetDeconvolute <- function(inputDat ,detectOutliers=TRUE, option, Calibration=TR
         tttrow= factor(KEY$DataType[match(rr, KEY$Label)],labels= unique(KEY$DataType))
         tttcol= factor(KEY$DataType[match(cc, KEY$Label)],labels= unique(KEY$DataType))
         if (ntype == 1) {
-         # CCnew = CC[1]
+          CCnew = CC[1]
           ttt2row = str
           ttt2col = str
-         # names(CCnew) = str
-         # ann_col <- list(DataType = CCnew)
+          names(CCnew) = str
+          ann_col <- list(DataType = CCnew)
         }
         if(ntype==2) {
           CCnew = CC[1:2]
